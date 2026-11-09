@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noimageindex, noarchive, nosnippet">
+<script src="gate.js"></script>
+<title>Ultra Editions</title>
+<meta name="description" content="Ultra mods of Double Dash and Super Mario Strikers with new game modes, rules and settings.">
+<style>
+/* The front page of both Ultra mods: a screenshot of each side by side, with what it adds and a link to its
+   own page. The same colors and fonts as those pages; system fonts only. */
+:root {
+  --bg: #0b1430; --surface: #121f48; --raised: #182a5e; --ink: #f1f4fc; --muted: #a9b4d2; --line: #26387a;
+  --gold: #ffcf3a; --gold-deep: #ff9a00; --cyan: #6edcff;
+  --check-a: #f1f4fc; --check-b: #0b1430; --grass-a: #2f8f3a; --grass-b: #3aa646;
+  --display: "Arial Rounded MT Bold", "Trebuchet MS", "Segoe UI Black", sans-serif;
+  --body: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "Cascadia Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #eef2fa; --surface: #ffffff; --raised: #f3f6fd; --ink: #14203f; --muted: #56617d; --line: #d4dbeb;
+    --gold: #b98200; --gold-deep: #c26a00; --cyan: #1f6fbf; --check-a: #14203f; --check-b: #ffffff;
+    color-scheme: light;
+  }
+}
+:root[data-theme="dark"] { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; }
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+.band { display: grid; grid-template-columns: 1fr 1fr; height: 16px; }
+.band .flag { background: repeating-conic-gradient(var(--check-a) 0 25%, var(--check-b) 0 50%) 0 0 / 16px 16px; }
+.band .pitch { background: repeating-linear-gradient(90deg, var(--grass-a) 0 32px, var(--grass-b) 32px 64px); }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+
+.hero { padding: 48px 0 28px; }
+.eyebrow { font-family: var(--mono); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--display); font-weight: 800; font-size: clamp(44px, 9vw, 92px); line-height: 0.95; margin: 8px 0 18px; }
+h1 span { background: linear-gradient(180deg, #fff7a0, var(--gold) 45%, var(--gold-deep)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) h1 span { background: none; color: var(--gold); } }
+.lede { font-size: clamp(18px, 2.4vw, 22px); max-width: 62ch; margin: 0; }
+
+.games { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 12px 0 44px; }
+.game { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; text-decoration: none; transition: transform 0.15s, border-color 0.15s; }
+.game:hover { transform: translateY(-3px); border-color: var(--gold); }
+.game img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-bottom: 1px solid var(--line); }
+.game .body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.game h2 { font-family: var(--display); font-weight: 800; font-size: clamp(24px, 3vw, 32px); line-height: 1.05; margin: 0; }
+.game h2 img { display: block; width: min(190px, 65%); height: auto; aspect-ratio: auto; object-fit: contain; border: 0; margin-top: 8px; }
+.game p { margin: 0; color: var(--muted); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; }
+.fact { background: var(--raised); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 14px; }
+.fact b { font-family: var(--display); color: var(--gold); margin-right: 4px; }
+.more { margin-top: auto; font-family: var(--display); color: var(--cyan); }
+
+footer { border-top: 1px solid var(--line); padding: 20px 0 48px; color: var(--muted); font-size: 14px; }
+footer p { margin: 0 0 6px; }
+footer .by { color: var(--gold); font-family: var(--display); }
+
+@media (max-width: 760px) {
+  .games { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="band" aria-hidden="true"><div class="flag"></div><div class="pitch"></div></div>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>Ultra <span>Editions</span></h1>
+    <p class="lede">Two GameCube mods you won't find anywhere else! New game modes and tons of tweaks for you to add extra gameplay for tons of fun with friends. All made for real GameCube hardware!</p>
+  </header>
+
+  <div class="games">
+    <a class="game" href="mkdd/">
+      <img src="mkdd/img/cup-select.jpg" width="960" height="708" alt="The cup select of Double Dash Ultra on Retro 1, with SNES Mario Circuit 1, N64 Kalimari Desert, DS Cheep-Cheep Beach and GBA Bowser Castle 1 in the Mushroom Cup">
+      <div class="body">
+        <h2>Mario Kart: Double Dash!!<img src="mkdd/img/ultra-logo.png" width="900" height="214" alt="Ultra!!"></h2>
+        <p>110 extra courses, seven new game modes, 200cc, the mechanics of Mario Kart Wii, CPUs in battle mode, 70 skins, LAN play and the Ultra menu!</p>
+        <span class="more">See Double Dash Ultra</span>
+      </div>
+    </a>
+    <a class="game" href="strikers/">
+      <img src="strikers/img/captain-powers.jpg" width="722" height="510" alt="Donkey Kong's ground pound in Super Mario Strikers Ultra: a column of light, earth flying up and the players around him falling over">
+      <div class="body">
+        <h2>Super Mario Strikers<img src="strikers/img/ultra-logo.png" width="768" height="319" alt="Ultra"></h2>
+        <p>The first real Strikers mod, with new game modes, captain powers, red cards, penalties, rotating teams and the beta content back in the game!</p>
+        <span class="more">See Super Mario Strikers Ultra</span>
+      </div>
+    </a>
+  </div>
+
+  <footer>
+    <p>A fun passion project by <span class="by">AsmGecko</span> for my friend group. :)</p>
+    <p>A free fan project, not affiliated with, endorsed or sponsored by Nintendo. Mario Kart: Double Dash!!, Super Mario Strikers and their characters are trademarks of Nintendo. No game files are shared here: the patch only works with your own disc.</p>
+  </footer>
+</div>
+</body>
+</html>

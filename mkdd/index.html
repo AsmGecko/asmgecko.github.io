@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noimageindex, noarchive, nosnippet">
+<script src="../gate.js"></script>
+<title>Double Dash Ultra</title>
+<meta name="description" content="Double Dash Ultra: 110 extra courses, seven game modes, 200cc, the mechanics of Mario Kart Wii, CPUs in battle, 70 skins and LAN play. Runs on a real GameCube and in Dolphin.">
+<style>
+/* The page of MKDD Ultra: the title, then the Ultra menu as it is in the game, to try out
+   (ultra-menu.js with menu.js), with what a row does beside it, then the moves, the bots, the game modes, the courses,
+   the skins, the rest, the patcher and the credits. The menu
+   window keeps the dark of the game in the light theme too. Offline on purpose: system fonts only. */
+:root {
+  --bg: #0b1430; --ink: #f1f4fc; --muted: #a9b4d2; --line: #26387a; --edge: #3c5aa8;
+  --gold: #ffcf3a; --cyan: #6edcff; --green: #3fd27a;
+  --check-a: #f1f4fc; --check-b: #0b1430;
+  --outline: -1px -1px 0 #0a1030, 1px -1px 0 #0a1030, -1px 1px 0 #0a1030, 1px 1px 0 #0a1030, 0 2px 0 #0a1030;
+  --display: "Arial Rounded MT Bold", "Trebuchet MS", "Segoe UI Black", sans-serif;
+  --body: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "Cascadia Mono", ui-monospace, Consolas, monospace;
+  --bad: #ff6b5e; --on-gold: #1a1300;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #eef2fa; --ink: #14203f; --muted: #56617d; --line: #cdd6ea; --edge: #9fb0d8;
+    --gold: #a86f00; --cyan: #1f6fbf; --check-a: #14203f; --check-b: #eef2fa;
+    --bad: #b0282e; --on-gold: #ffffff;
+    color-scheme: light;
+  }
+}
+:root[data-theme="dark"] { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.6 var(--body); }
+img { max-width: 100%; height: auto; }
+.flag { height: 16px; background: repeating-conic-gradient(var(--check-a) 0 25%, var(--check-b) 0 50%) 0 0 / 16px 16px; }
+.page { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+.crumbs { padding: 14px 0 0; font-size: 14px; color: var(--muted); }
+.crumbs a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
+.crumbs a:hover { color: var(--ink); }
+h2 { font-family: var(--display); font-size: clamp(26px, 3.4vw, 36px); line-height: 1.1; margin: 0 0 6px; text-wrap: balance; }
+.intro { color: var(--muted); margin: 0 0 18px; max-width: 72ch; }
+.intro strong { color: var(--ink); font-weight: 600; }
+section { padding: 56px 0 0; }
+
+/* The title */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); gap: 36px; align-items: center; padding: 28px 0 0; }
+.eyebrow { font-family: var(--mono); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.hero h1 { margin: 6px 0 0; font-family: var(--display); font-size: clamp(26px, 3.4vw, 40px); line-height: 1.1; }
+.hero h1 img { display: block; width: min(360px, 80%); margin: 6px 0 0 -6px; }
+.lede { font-size: clamp(17px, 2vw, 20px); margin: 18px 0 14px; max-width: 58ch; }
+.killer { list-style: none; margin: 0 0 22px; padding: 0; display: grid; gap: 7px; max-width: 62ch; }
+.killer li { padding-left: 22px; position: relative; color: var(--muted); font-size: 16px; line-height: 1.4; }
+.killer li::before { content: ""; position: absolute; left: 0; top: 7px; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); }
+.killer b { color: var(--ink); font-family: var(--display); font-weight: 400; margin-right: 6px; }
+.facts { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0 0 22px; color: var(--muted); font-size: 15px; }
+.facts b { color: var(--gold); font-family: var(--display); font-size: 18px; margin-right: 4px; }
+.killer b a { color: inherit; text-decoration: none; }
+.killer b a:hover { color: var(--gold); }
+.cta { display: inline-flex; flex-wrap: wrap; gap: 0 10px; align-items: center; font-family: var(--display); padding: 10px 18px; border-radius: 999px; border: 2px solid var(--line); color: var(--muted); text-decoration: none; }
+.cta b { color: var(--ink); font-weight: 400; }
+.cta:hover { border-color: var(--gold); }
+.hero .shot { display: block; width: 100%; border-radius: 12px; border: 3px solid #f1f4fc; box-shadow: 0 0 0 3px #0a1030, 0 18px 50px #0007; }
+
+/* The menu as the game draws it, always dark: the blue world of SELECT MODE, its stars, its checkered band and every
+   row in a pill, gold round the chosen one */
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 24px; align-items: start; outline: none; }
+.stage:focus-visible .mk { box-shadow: 0 0 0 3px #0a1030, 0 0 0 6px var(--gold); }
+.mk { --pad: 18px; color: #f1f4fc; background: #002450; border: 2px solid #0a1030; border-radius: 12px; box-shadow: 0 20px 60px #0007; padding: 0 var(--pad); overflow: hidden; font-family: var(--display); text-transform: uppercase; letter-spacing: 0.06em; text-shadow: var(--outline); animation: mk-stars 11s linear infinite; }
+@keyframes mk-stars { to { background-position: -72px -36px; } }
+@media (prefers-reduced-motion: reduce) { .mk { animation: none; } }
+.mk button { font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit; text-shadow: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.mk-top { position: relative; display: flex; justify-content: center; margin: 0 calc(-1 * var(--pad)); padding: 8px 0; background: repeating-conic-gradient(#373ceb 0 25%, #5faae4 0 50%) 0 0 / 16px 16px; border-bottom: 1px solid #ffffff5a; }
+.mk-title { display: block; font: 800 34px/40px var(--display); letter-spacing: 0.04em; color: #ffcf3a; text-shadow: 0 2px 0 #7a3800, 0 0 2px #7a3800; }
+.mk-page { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 1px; font-size: 13px; }
+.mk-trigger { display: grid; place-items: center; width: 26px; height: 22px; border-radius: 6px; background: #d8dce8; color: #14203f; font: 12px var(--display); text-shadow: none; }
+.mk-page span { margin-left: 4px; }
+.menu-head { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 8px 28px; align-items: start; margin-bottom: 18px; }
+.menu-head .intro { margin: 0; }
+.menu-head.two .real { max-width: 280px; }
+@media (min-width: 1000px) { .menu-head.two { grid-template-columns: minmax(0, 1fr) 280px 280px; } }
+.real { margin: 4px 0 0; }
+.real img { display: block; width: 100%; border-radius: 8px; }
+.real figcaption { margin-top: 4px; font-size: 13px; color: var(--muted); }
+.mk-band { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 8px 0 12px; }
+.mk-tabs { flex: 1; display: flex; justify-content: space-between; gap: 6px; padding-bottom: 6px; background: linear-gradient(#3cc8f0a0, #3cc8f0a0) 0 calc(100% - 1px) / 100% 1px no-repeat; overflow-x: auto; scrollbar-width: none; scroll-behavior: smooth; }
+.um-tab { position: relative; font-size: 15px; color: #7896c8 !important; white-space: nowrap; padding: 4px 9px !important; border-radius: 6px; }
+.um-tab[aria-selected=true] { font-size: 20px; color: #ffcf3a !important; }
+.um-tab[aria-selected=true]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 4px; border-radius: 2px; background: #ffc828; }
+.mk-mode { margin: 0 0 10px; padding: 4px 10px 8px 12px; border: 2px solid #2f83df90; border-radius: 14px; background: #0a0a3c66; }
+.mk-mode.um-on { border-color: #ffc828; }
+.mk .mk-mode .um-row { margin: 0; padding: 0; border: 0; background: none; font-size: 1.2em; }
+.um-fixed-about { margin: 6px 0 0; font-size: 13px; line-height: 1.45; min-height: 2.9em; }
+.mk .um-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; min-height: 30px; margin: 0 0 6px; padding: 1px 8px 1px 12px; border: 2px solid #2f83df90; border-radius: 999px; background: #0a0a3c66; cursor: pointer; }
+.mk .um-row.um-on { border-color: #ffc828; }
+.mk .um-name { color: #8cf5fa; }
+.mk .um-on .um-name { color: #ffcf3a; font-size: 1.1em; }
+.um-value { display: flex; align-items: center; gap: 4px; }
+.um-pill { min-width: 92px; text-align: center; color: #7896c8; }
+.um-pill.um-set, .um-pill.v-on { color: #8cf5fa; }
+.um-pill.v-off { color: #7896c8; }
+.mk .um-on .um-pill { color: #ffcf3a; font-size: 1.1em; }
+.mk .um-pill[style] { color: transparent; background: linear-gradient(var(--top), var(--bottom)); -webkit-background-clip: text; background-clip: text; text-shadow: none; filter: drop-shadow(1px 1px 0 #0a1030) drop-shadow(-1px -1px 0 #0a1030) drop-shadow(0 1px 0 #0a1030); }
+.mk .um-arrow { width: 26px; color: #14306e; -webkit-text-stroke: 1px #5a9650; text-shadow: none; font-size: 12px; padding: 4px 0; }
+.mk .um-on .um-arrow:not(.um-end) { color: #bef53c; -webkit-text-stroke: 1px #001c46; font-size: 16px; }
+.mk-about { margin: 14px calc(-1 * var(--pad)) 0; padding: 8px var(--pad); background: #000e28c8; font-size: 13px; line-height: 1.45; min-height: 3.4em; }
+.mk-summary { margin: 10px 4px 0; font-family: var(--display); font-size: 14px; color: var(--gold); }
+.mk-summary span { color: var(--muted); font-family: var(--body); }
+
+/* What a row does: beside the menu, or under the chosen row on a phone */
+.panel { position: sticky; top: 16px; }
+.um-detail img { display: block; width: 100%; border-radius: 10px; border: 2px solid var(--edge); }
+.um-card { aspect-ratio: 4 / 3; border-radius: 10px; border: 2px solid #3c5aa8; display: grid; place-items: center; align-content: center; gap: 10px; color: #f1f4fc; background: repeating-conic-gradient(#121c58 0 25%, #0f174a 0 50%) 0 0 / 40px 40px; font-family: var(--display); text-transform: uppercase; letter-spacing: 0.06em; text-shadow: var(--outline); }
+.um-card img { width: 112px; height: 112px; object-fit: contain; border: 0; }
+.panel h3 { font-family: var(--display); font-size: 22px; line-height: 1.2; margin: 14px 0 4px; }
+.um-text { margin: 0 0 10px; font: 400 16px/1.55 var(--body); text-transform: none; letter-spacing: 0; text-shadow: none; }
+.um-values { margin: 0; color: var(--muted); font-size: 14px; }
+
+/* The moves and the game modes: screenshots, with the ones without a screenshot in a list */
+.strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 18px; }
+.strip figure { margin: 0; }
+.strip figure.wide { grid-column: span 2; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.strip img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; border: 2px solid var(--edge); }
+.strip figcaption { font-size: 15px; color: var(--muted); margin-top: 8px; }
+.strip .wide figcaption { margin-top: 0; font-size: 16px; }
+.strip figcaption b { display: block; color: var(--ink); font-family: var(--display); font-weight: 400; font-size: 18px; }
+.moves { margin: 0; display: grid; gap: 14px; align-content: start; }
+.moves div { border-top: 1px solid var(--line); padding-top: 10px; color: var(--muted); font-size: 15px; }
+.moves dt { color: var(--ink); font-family: var(--display); font-size: 18px; }
+.moves dd { margin: 0; }
+.list-title { font-family: var(--display); font-size: 22px; margin: 36px 0 2px; }
+.skins { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0 24px; }
+.skin-tabs .skins { display: none; }
+#skins-0:checked ~ .skins:nth-of-type(1), #skins-1:checked ~ .skins:nth-of-type(2), #skins-2:checked ~ .skins:nth-of-type(3), #skins-3:checked ~ .skins:nth-of-type(4) { display: grid; }
+.skins > div { display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; align-items: start; gap: 3px 10px; padding: 7px 0; border-top: 1px solid var(--line); }
+.skins b { font-family: var(--display); font-weight: 400; line-height: 1.2; }
+.labels { display: flex; flex-wrap: wrap; gap: 4px; }
+.labels span { font-family: var(--display); font-size: 11px; letter-spacing: 0.04em; padding: 0 8px; border-radius: 999px; color: #3a2400; background: linear-gradient(180deg, #ffe680, #ffb02a); box-shadow: inset 0 -1px 0 #c97800; }
+.courses { max-width: 64ch; }
+.tabs input { position: absolute; opacity: 0; pointer-events: none; }
+.tabs label { display: inline-block; font-family: var(--display); font-size: 15px; letter-spacing: 0.03em; padding: 6px 14px; margin: 0 6px 10px 0; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); cursor: pointer; }
+.tabs input:focus-visible + label { outline: 2px solid var(--gold); }
+.courses .cup-page { display: none; }
+.courses dl { margin: 0; columns: 2; column-gap: 36px; }
+.courses dt { font-family: var(--display); font-size: 15px; letter-spacing: 0.03em; color: var(--gold); padding-top: 6px; margin-top: 10px; border-top: 1px solid var(--line); break-after: avoid; }
+.courses dt:first-child { margin-top: 0; }
+.courses dd { margin: 0; display: flex; justify-content: space-between; gap: 12px; font-size: 15px; padding: 2px 0; break-inside: avoid; }
+.courses dd span { color: var(--muted); font-size: 13px; text-align: right; }
+.tabs input:checked + label { background: var(--gold); color: var(--on-gold); border-color: var(--gold); }
+#courses-0:checked ~ .cup-page:nth-of-type(1), #courses-1:checked ~ .cup-page:nth-of-type(2), #courses-2:checked ~ .cup-page:nth-of-type(3), #courses-3:checked ~ .cup-page:nth-of-type(4), #courses-4:checked ~ .cup-page:nth-of-type(5), #courses-5:checked ~ .cup-page:nth-of-type(6) { display: block; }
+.changes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 36px; margin: 0; }
+.changes div { border-top: 1px solid var(--line); padding-top: 10px; color: var(--muted); font-size: 16px; }
+.changes dt { color: var(--ink); font-family: var(--display); }
+.changes dd { margin: 0; }
+.changes dd ul { margin: 4px 0 0; padding-left: 20px; display: grid; gap: 4px; }
+.more { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; }
+.more .list-title { margin: 14px 0 10px; }
+.more .changes { grid-template-columns: minmax(0, 1fr); }
+.more .changes div { font-size: 15px; }
+.install p { color: var(--muted); max-width: 64ch; }
+.install strong { color: var(--ink); }
+.steps { margin: 0 0 22px; padding: 0; list-style: none; counter-reset: step; display: grid; gap: 10px; max-width: 64ch; }
+.steps li { counter-increment: step; position: relative; padding-left: 44px; color: var(--muted); min-height: 32px; }
+.steps li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: var(--on-gold); font-family: var(--display); font-weight: 400; }
+.steps li b { color: var(--ink); font-weight: 400; font-family: var(--display); }
+.steps .where { margin-top: 4px; font-size: 14px; }
+.steps .where summary { cursor: pointer; color: var(--ink); }
+.steps .where code { font-family: var(--mono); font-size: 13px; overflow-wrap: anywhere; }
+.check { max-width: min(64ch, calc(100vw - 32px)); border: 2px solid var(--edge); border-radius: 14px; padding: 0; color: var(--muted); font-size: 15px; background: var(--bg); color-scheme: inherit; }
+.check > div { padding: 18px 22px; }
+.check::backdrop { background: #0a1030cc; }
+.check h3 { margin: 0 0 8px; color: var(--ink); font-size: 20px; }
+.check p { margin: 10px 0; }
+.check form { margin: 14px 0 0; }
+.check form button { font: inherit; font-weight: 600; padding: 8px 18px; border-radius: 999px; border: 1px solid var(--edge); background: transparent; color: var(--ink); cursor: pointer; }
+.release { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 0 0 6px; }
+.release dt { color: var(--muted); }
+.release dd { margin: 0; }
+.release .hash { font-family: var(--mono); font-size: 12px; word-break: break-all; align-self: center; }
+.credits p { color: var(--muted); max-width: 75ch; }
+.by { color: var(--gold); font-family: var(--display); }
+.credits .made { font-size: 1em; color: var(--ink); margin: 0 0 14px; }
+.credits ul { color: var(--muted); padding-left: 20px; max-width: 75ch; display: grid; gap: 8px; }
+.credits li b { color: var(--ink); font-weight: 600; }
+.patcher { margin-top: 18px; max-width: 680px; border-radius: 18px; border: 2px solid var(--edge); background: linear-gradient(180deg, #121d4d, #0d1538); box-shadow: 0 24px 60px #0008, inset 0 1px 0 #ffffff22; overflow: hidden; color: #f1f4fc; }
+.patcher [hidden], .patcher[hidden] { display: none !important; }
+.patcher .top { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: linear-gradient(180deg, #ffe680, #ffb02a); color: #3a2400; font-family: var(--display); font-weight: 400; font-style: normal; letter-spacing: 0.08em; text-transform: uppercase; }
+.patcher .body { padding: 22px; display: grid; gap: 16px; }
+.slot { position: relative; display: grid; grid-template-columns: 96px 1fr; gap: 18px; align-items: center; padding: 18px; border-radius: 14px; border: 2px dashed #3c5aa8; background: #0a1030; cursor: pointer; }
+.slot:hover, .slot.drag, .slot:has(input:focus-visible) { border-color: #ffcf3a; }
+.slot.file { grid-template-columns: 1fr; padding: 12px 18px; }
+.slot input { position: absolute; opacity: 0; width: 0; height: 0; }
+.slot b { display: block; font-family: var(--display); font-weight: 400; font-style: normal; font-size: 20px; }
+.slot span span { color: #a9b4d2; font-size: 15px; }
+.disc { width: 96px; height: 96px; border-radius: 50%; position: relative; background: repeating-conic-gradient(#1a2660 0 15deg, #121c4c 15deg 30deg); box-shadow: 0 6px 18px #0009; }
+.disc::after { content: ""; position: absolute; inset: 36px; border-radius: 50%; background: #0a1030; box-shadow: 0 0 0 6px #3c5aa8 inset; }
+.loaded .disc { background: conic-gradient(from 0deg, #cbd5ff, #6b7bd6, #e8ecff, #5566c9, #cbd5ff); }
+.loaded .disc::after { box-shadow: 0 0 0 6px #a9b4d2 inset; }
+.lcd { border-radius: 10px; background: #061023; border: 1px solid #1b2a5c; box-shadow: inset 0 2px 12px #000a; padding: 12px 16px; font-family: var(--mono); font-size: 14px; color: #3fd27a; display: grid; gap: 4px; min-height: 42px; }
+.lcd div:empty { display: none; }
+.lcd div::before { content: "● "; }
+.lcd .wait { color: #6edcff; }
+.lcd .wait::before { content: "○ "; }
+.lcd .bad { color: #ff6b5e; }
+.patcher progress { width: 100%; height: 14px; appearance: none; border-radius: 999px; background: #061023; border: 1px solid #1b2a5c; overflow: hidden; }
+.patcher progress::-webkit-progress-bar { background: transparent; }
+.patcher progress::-webkit-progress-value { background: repeating-linear-gradient(90deg, #ffcf3a 0 10px, #ffe680 10px 20px); }
+.patcher progress::-moz-progress-bar { background: repeating-linear-gradient(90deg, #ffcf3a 0 10px, #ffe680 10px 20px); }
+.patcher .row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
+.seg { display: inline-flex; border: 1px solid #3c5aa8; border-radius: 999px; padding: 3px; background: #0a1030; }
+.seg label { position: relative; padding: 6px 14px; border-radius: 999px; font-size: 15px; color: #a9b4d2; cursor: pointer; }
+.seg input { position: absolute; opacity: 0; width: 0; height: 0; }
+.seg label:has(input:checked) { background: #3c5aa8; color: #f1f4fc; }
+.seg label:has(input:focus-visible) { outline: 2px solid #ffcf3a; }
+.patcher button, .patcher .save { font: inherit; font-family: var(--display); font-weight: 400; font-style: normal; font-size: 20px; letter-spacing: 0.04em; padding: 14px 30px; border-radius: 999px; border: 0; background: #ffcf3a; color: #1a1300; cursor: pointer; text-decoration: none; box-shadow: 0 6px 0 #b07600, 0 12px 24px #0008; }
+.patcher button:disabled { opacity: 0.4; cursor: default; box-shadow: none; }
+.patcher .foot { padding: 10px 22px 16px; font-size: 14px; color: #a9b4d2; border-top: 1px solid #1b2a5c; }
+.patcher .foot a { color: #ffcf3a; }
+footer { margin-top: 44px; padding: 20px 0 48px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+footer p { margin: 0 0 6px; }
+footer b { color: var(--gold); }
+
+@media (max-width: 960px) {
+  .stage { grid-template-columns: minmax(0, 1fr) 320px; }
+  .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  body { font-size: 16px; }
+  .courses dl { columns: 1; }
+  section { padding-top: 44px; }
+  .slot { grid-template-columns: 64px 1fr; gap: 14px; padding: 14px; }
+  .disc { width: 64px; height: 64px; }
+  .disc::after { inset: 24px; }
+  .patcher .body { padding: 16px; }
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 20px; padding-top: 16px; }
+  .hero .shot { order: -1; }
+  .cta { border-radius: 16px; font-size: 15px; }
+  .stage { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .panel { display: none; }
+  .mk { --pad: 10px; }
+  .mk-top { justify-content: flex-start; padding-left: 10px; }
+  .mk-page { right: 10px; font-size: 11px; }
+  .mk-page img { height: 18px; }
+  .mk-title { height: 22px; }
+  .menu-head { grid-template-columns: minmax(0, 1fr); }
+  .real { max-width: 320px; }
+  .mk-band { gap: 6px; margin: 8px 0 10px; }
+  .mk-tabs { gap: 14px; scroll-snap-type: x mandatory; mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent); padding: 0 12px 6px; }
+  .um-tab { scroll-snap-align: center; padding: 6px 9px !important; }
+  .mk .mk-mode .um-row { padding-right: 4px; gap: 6px; font-size: 14px; }
+  .mk-mode .um-name, .mk-mode .um-pill { white-space: nowrap; font-size: 1em !important; }
+  .mk-rows .um-row { min-height: 44px; font-size: 14px; }
+  .mk .um-arrow { width: 28px; padding: 8px 0; }
+  .um-pill { min-width: 76px; }
+  .mk .mk-mode .um-detail { margin-bottom: 2px; }
+  .mk .um-detail { margin: 6px 0 10px; background: #0a1030cc; border-radius: 10px; padding: 10px 12px; }
+  .mk .um-detail img { margin-bottom: 8px; border-color: #3c5aa8; }
+  .mk .um-text { margin: 0; font-size: 15px; color: #f1f4fc; }
+  .mk-about, .um-fixed-about { display: none; }
+  .strip { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  .strip figure.wide { grid-column: auto; display: block; }
+  .strip .wide figcaption { margin-top: 8px; font-size: 15px; }
+  .changes, .more { grid-template-columns: minmax(0, 1fr); }
+  .skins { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 14px; }
+  .skins > div { gap: 3px 8px; }
+}
+</style>
+</head>
+<body>
+<div class="flag" aria-hidden="true"></div>
+<div class="page">
+  <nav class="crumbs"><a href="../">Ultra</a> · <a href="../strikers/">Super Mario Strikers Ultra</a></nav>
+
+  <header class="hero">
+    <div>
+      <h1>Mario Kart: Double Dash!!<img src="img/ultra-logo.png" width="900" height="214" alt="Ultra!!"></h1>
+      <p class="lede">A mod made for fun! 110 extra courses, seven new game modes, 200cc, the mechanics of Mario Kart Wii, CPUs in battle mode and an Ultra menu with more than 30 rules. Tested on real GameCube hardware!</p>
+      <ul class="killer">
+        <li><b><a href="#ultra-menu">The Ultra menu</a></b>Press Z on the cup select for seven game modes and more than 30 rules and settings to spice up the gameplay!</li>
+        <li><b><a href="#wii">Hold items</a></b>Keep your shell or banana behind your kart, triple shells circle like the modern and older Mario Kart games.</li>
+        <li><b><a href="#wii">Slipstream, hop and tricks</a></b>Ported straight from Mario Kart Wii, with look back and side attack on the D-pad.</li>
+        <li><b><a href="#bots">CPUs in battle mode!</a></b>A bot engine written from scratch, so you can play battle mode on your own! Add up to three bots in battle and seven CPUs in Versus.</li>
+        <li><b><a href="#modes">Seven new game modes</a></b>Knockout, Accelerate, Shell Shock, Item Roulette, Bob-omb Tag, Countdown and Balloon Race. Every rule you set counts on top.</li>
+        <li><b><a href="#modes">200cc</a></b>A brand-new fourth class! And Mirror Mode is a rule now, so you can mirror ANY class.</li>
+        <li><b><a href="#courses">110 extra courses</a></b>80 tracks and 30 battle stages, with full music in stereo.</li>
+        <li><b><a href="#courses">A list of all tracks</a></b>In Versus and Time Trial, X swaps the cups for a list of every track, by console or from A to Z. The stage select has the same list.</li>
+        <li><b><a href="#skins">70 skins</a></b>For every character and 16 of the karts.</li>
+        <li><b><a href="#lan">Proper LAN support</a></b>Every Ultra menu setting synced over LAN, a character select for up to eight players and a faster connection setup.</li>
+        <li><b><a href="#more">And way more</a></b>Native 16:9, Teams in Versus and battle, Grand Prix for four, everything unlocked, kart stats, duplicate characters and a long list of fixes.</li>
+      </ul>
+      <a class="cta" href="#install"><b data-soon>Coming soon</b><b data-ready hidden>Ultra Patcher</b><span data-soon>a free patch for your own disc</span><span data-ready hidden>Patch your disc now!</span></a>
+    </div>
+    <img class="shot" src="img/ultra-menu.jpg" width="960" height="708" alt="The Ultra menu in the game, on its Settings page with Duplicate characters, Side attack, Look back, Slipstream, Hop and Tricks, and the cursor on Hold items">
+  </header>
+
+  <section id="ultra-menu">
+    <h2>The Ultra menu</h2>
+    <p class="intro"><strong>Z</strong> opens it in the game, with the race rules on the cup select and the battle rules on the stage select. Below is the same menu: pick a row to see what it does.</p>
+    <div class="stage" id="menu">
+      <div>
+        <div class="mk">
+          <div class="mk-top">
+            <span class="mk-title">ULTRA MENU</span>
+            <div class="mk-page">
+              <button data-um="prev" aria-label="Previous page"><span class="mk-trigger">L</span></button>
+              <button data-um="next" aria-label="Next page"><span class="mk-trigger">R</span></button>
+              <span>Page</span>
+            </div>
+          </div>
+          <div class="mk-band"><div class="mk-tabs" data-um="tabs"></div></div>
+          <div class="mk-mode" data-um="fixed"></div>
+          <div class="mk-rows" data-um="rows"></div>
+          <p class="mk-about" data-um="about"></p>
+        </div>
+        <p class="mk-summary"><span>On: </span><span data-um="summary"></span></p>
+      </div>
+      <aside class="panel" data-um="panel"></aside>
+    </div>
+  </section>
+
+  <section id="wii">
+    <h2>The moves of Mario Kart Wii</h2>
+    <p class="intro">When switched on, all CPUs will also make use of this.</p>
+    <div class="strip">
+      <figure class="wide">
+        <img src="img/hold-items.jpg" width="960" height="708" alt="Luigi and Mario's kart on Wii Daisy Circuit with three red shells around it, one behind the left wheel, one by the right wheel and one in Mario's hand" loading="lazy">
+        <figcaption><b>Hold items, and three shells around you</b>Hold X or Y and your banana or shell sits behind your kart, where it stops a hit. Let go to throw it. Roll three green or red shells and they circle your kart, each one blocking a hit, as in Mario Kart Wii. And anyone can roll three shells now, not only Koopa and Paratroopa.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/tricks.jpg" width="960" height="708" alt="Mario and Luigi's kart in the air over the sea of DS Cheep-Cheep Beach, rolled to its side in a trick" loading="lazy">
+        <figcaption><b>Tricks</b>Press R or L as you fly off a ramp or a big bump and the kart spins or rolls, then lands with a mini-turbo boost. Over a gap it turns twice.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/slipstream.jpg" width="960" height="708" alt="Luigi's kart right behind Waluigi on SNES Mario Circuit 1, with white streaks of wind along it" loading="lazy">
+        <figcaption><b>Slipstream</b>Stay right behind another kart for a second and a half and you shoot forward at the speed of a mushroom.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/side-attack.jpg" width="960" height="708" alt="Waluigi bashing Daisy's kart sideways with stars flying on Wii Luigi Circuit, seen from two of the four screens" loading="lazy">
+        <figcaption><b>Side attack</b>Kart bashing is now mapped to the D-pad. Press left or right to bash karts the same way you'd do in co-op!</figcaption>
+      </figure>
+      <dl class="moves">
+        <div><dt>Hop</dt><dd>R or L makes the kart hop, and the drift starts when it lands.</dd></div>
+        <div><dt>Look back</dt><dd>Hold the D-pad down to see who's behind you, or Y when you have no item. X and the D-pad up sound the horn. In split screen only your own screen turns.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="bots">
+    <h2>CPUs in battle mode</h2>
+    <p class="intro">Double Dash never had bots in battle mode, so I wrote a bot engine from scratch, and now you can play battle mode on your own! Add up to three bots on the Battle page of the Ultra menu and pick how good they are. Versus gets up to seven CPUs.</p>
+    <div class="strip">
+      <figure class="wide">
+        <img src="img/battle-bots.jpg" width="960" height="708" alt="Balloon Battle alone on Wii Block Plaza: Mario and Luigi are down to one balloon with a green shell held behind them, and the bots Koopa Troopa and Paratroopa with yellow balloons drive right beside them">
+        <figcaption><b>Bot engine written from scratch</b>Works on all 30 battle stages, including the custom ones. Four difficulty levels, up to brutal.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="modes">
+    <h2>Seven new game modes and 200cc</h2>
+    <p class="intro">Picked on the Race page of the Ultra menu, with every rule you set on top. The intro of every race says which mode is on and how it works.</p>
+    <div class="strip">
+      <figure class="wide">
+        <img src="img/balloon-race.jpg" width="960" height="708" alt="A balloon race on SNES Mario Circuit 1: Luigi's kart with three red balloons, boosting past Toadette with Petey Piranha ahead" loading="lazy">
+        <figcaption><b>Balloon race</b>Balloon Battle in a race! Every kart carries balloons, and every hit that spins or flips you pops one. Without balloons you're out, and the last kart with balloons wins on the spot. A shell held behind your kart saves a balloon.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/bob-omb-tag.jpg" width="960" height="708" alt="Four players in Bob-omb tag on DS Shroom Ridge: Peach and Daisy lead with the bob-omb held up, 19 seconds left on it" loading="lazy">
+        <figcaption><b>Bob-omb tag</b>Five seconds in, the leader gets a bob-omb that goes off twenty seconds later. Bump into someone to pass it on! They can't hand it straight back.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/countdown.jpg" width="960" height="708" alt="Four players in countdown on the pier of DS Cheep-Cheep Beach, each with 1:50 left on the clock at the top of the screen" loading="lazy">
+        <figcaption><b>Countdown</b>Two minutes on the clock, and five more seconds for every item that hits someone else. At zero you're out and who gets furthest wins! Based on a CTGP-R mode on the Wii.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/select-mode.jpg" width="960" height="708" alt="Select Mode for one player with four rows, Grand Prix at 200cc with the Golden Mushroom, then Time Trials, Versus and Battle" loading="lazy">
+        <figcaption><b>200cc</b>A brand-new fourth class, with the Golden Mushroom as its icon. Mirror Mode is a rule now, so you can mirror ANY class, 50cc to 200cc!</figcaption>
+      </figure>
+      <dl class="moves modes">
+        <div><dt>Knockout</dt><dd>Every time the leader starts a new lap, the last karts vanish from the race. The final lap is a duel.</dd></div>
+        <div><dt>Accelerate</dt><dd>Everyone gets faster with every lap, up to 1.4 times the top speed on the last one! Not in 200cc.</dd></div>
+        <div><dt>Shell shock</dt><dd>Every item box gives green shells, and they keep bouncing until they hit someone. When they're all out, a box gives a red one.</dd></div>
+        <div><dt>Item roulette</dt><dd>Every 12 seconds everyone with empty hands gets a roulette, wherever they are.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="courses">
+    <div class="menu-head two">
+    <div>
+    <h2>110 extra courses</h2>
+    <p class="intro">80 tracks and 30 battle stages on five extra pages of the cup and stage select, Retro 1 to 5. The first four have the full MKDD Plus lineup and the fifth has our own picks from the community. Every course has its music in stereo using ADPCM to squeeze it all on a single disc. Turn the page with <strong>L</strong> and <strong>R</strong>, or just keep going past the last cup. L+R together rolls a random cup. In Versus and Time Trial, <strong>X</strong> switches to a list of the tracks by console, or of all of them from A to Z. The stage select has the same list for the battle stages.</p>
+    </div>
+    <figure class="real"><a href="img/cup-select.jpg"><img src="img/cup-select.jpg" width="960" height="708" alt="The cup select on the first extra page, X Tracks and Z Ultra in the title bar, Retro 1 in the gold label under the title: Mushroom Cup with SNES Mario Circuit 1, N64 Kalimari Desert, DS Cheep-Cheep Beach and GBA Bowser Castle 1, and on the preview how long and how hard" loading="lazy"></a><figcaption>Retro 1 on the cup select</figcaption></figure>
+    <figure class="real"><a href="img/track-list.jpg"><img src="img/track-list.jpg" width="960" height="708" alt="The list of tracks: a tab per console and one for all tracks under the title bar, Nintendo 64 above seven rows of its tracks with Kalimari Desert picked, its preview beside them and under that where it is, how long and how hard" loading="lazy"></a><figcaption>The same tracks by console, on X</figcaption></figure>
+    </div>
+    <div class="courses tabs">
+      <input type="radio" name="courses" id="courses-0" checked><label for="courses-0">Retro 1</label>
+      <input type="radio" name="courses" id="courses-1"><label for="courses-1">Retro 2</label>
+      <input type="radio" name="courses" id="courses-2"><label for="courses-2">Retro 3</label>
+      <input type="radio" name="courses" id="courses-3"><label for="courses-3">Retro 4</label>
+      <input type="radio" name="courses" id="courses-4"><label for="courses-4">Retro 5</label>
+      <input type="radio" name="courses" id="courses-5"><label for="courses-5">Battle stages</label>
+      <div class="cup-page">
+        <dl>
+          <dt>Mushroom Cup</dt>
+          <dd>SNES Mario Circuit 1<span>That1loser4</span></dd>
+          <dd>N64 Kalimari Desert<span>ExxitZero</span></dd>
+          <dd>DS Cheep-Cheep Beach<span>Majas de pic</span></dd>
+          <dd>GBA Bowser Castle 1<span>That1loser4</span></dd>
+          <dt>Flower Cup</dt>
+          <dd>N64 Sherbet Land<span>That1loser4</span></dd>
+          <dd>Wii Daisy Circuit<span>That1loser4</span></dd>
+          <dd>GBA Lakeside Park<span>That1loser4</span></dd>
+          <dd>DS Shroom Ridge<span>Casini Loogi</span></dd>
+          <dt>Star Cup</dt>
+          <dd>SNES Ghost Valley 2<span>That1loser4, King Boo Gaming</span></dd>
+          <dd>3DS Piranha Plant Slide<span>That1loser4</span></dd>
+          <dd>N64 Choco Mountain<span>Casini Loogi</span></dd>
+          <dd>DS Bowser Castle<span>That1loser4</span></dd>
+          <dt>Special Cup</dt>
+          <dd>3DS Music Park<span>That1loser4</span></dd>
+          <dd>DS Tick-Tock Clock<span>That1loser4</span></dd>
+          <dd>Wii Moonview Highway<span>King Boo Gaming</span></dd>
+          <dd>N64 Rainbow Road<span>That1loser4</span></dd>
+        </dl>
+      </div>
+      <div class="cup-page">
+        <dl>
+          <dt>Mushroom Cup</dt>
+          <dd>GBA Peach Circuit<span>tarsa129</span></dd>
+          <dd>SNES Choco Island 2<span>That1loser4</span></dd>
+          <dd>Wii Coconut Mall<span>King Boo Gaming, Pao yeez</span></dd>
+          <dd>3DS Daisy Hills<span>That1loser4</span></dd>
+          <dt>Flower Cup</dt>
+          <dd>Wii Luigi Circuit<span>Atlas</span></dd>
+          <dd>DS Yoshi Falls<span>That1loser4</span></dd>
+          <dd>GBA Sky Garden<span>ExxitZero</span></dd>
+          <dd>3DS Neo Bowser City<span>That1loser4</span></dd>
+          <dt>Star Cup</dt>
+          <dd>N64 Wario Stadium<span>That1loser4</span></dd>
+          <dd>GBA Snow Land<span>That1loser4</span></dd>
+          <dd>3DS Mario Circuit<span>ExxitZero, Geras</span></dd>
+          <dd>DS Waluigi Pinball<span>That1loser4</span></dd>
+          <dt>Special Cup</dt>
+          <dd>3DS DK Jungle<span>That1loser4</span></dd>
+          <dd>N64 Banshee Boardwalk<span>ExxitZero</span></dd>
+          <dd>GBA Bowser Castle 4<span>That1loser4</span></dd>
+          <dd>SNES Rainbow Road<span>That1loser4</span></dd>
+        </dl>
+      </div>
+      <div class="cup-page">
+        <dl>
+          <dt>Mushroom Cup</dt>
+          <dd>N64 Koopa Troopa Beach<span>That1loser4</span></dd>
+          <dd>SNES Donut Plains 2<span>That1loser4</span></dd>
+          <dd>3DS Shy Guy Bazaar<span>ExxitZero</span></dd>
+          <dd>Wii Mario Circuit<span>That1loser4</span></dd>
+          <dt>Flower Cup</dt>
+          <dd>DS Peach Gardens<span>Geras</span></dd>
+          <dd>N64 Toad&#x27;s Turnpike<span>That1loser4, King Boo Gaming</span></dd>
+          <dd>Wii Mushroom Gorge<span>cristian64</span></dd>
+          <dd>SNES Bowser Castle 3<span>That1loser4</span></dd>
+          <dt>Star Cup</dt>
+          <dd>GBA Yoshi Desert<span>That1loser4</span></dd>
+          <dd>SNES Mario Circuit 2<span>That1loser4</span></dd>
+          <dd>Wii Koopa Cape<span>That1loser4</span></dd>
+          <dd>DS DK Pass<span>That1loser4</span></dd>
+          <dt>Special Cup</dt>
+          <dd>3DS Bowser&#x27;s Castle<span>That1loser4</span></dd>
+          <dd>GBA Boo Lake<span>That1loser4</span></dd>
+          <dd>SNES Vanilla Lake 2<span>Casini Loogi</span></dd>
+          <dd>Wii Rainbow Road<span>That1loser4</span></dd>
+        </dl>
+      </div>
+      <div class="cup-page">
+        <dl>
+          <dt>Mushroom Cup</dt>
+          <dd>DS Figure-8 Circuit<span>Majas de pic</span></dd>
+          <dd>SNES Choco Island 1<span>That1loser4</span></dd>
+          <dd>Wii Moo Moo Meadows<span>That1loser4</span></dd>
+          <dd>N64 DK&#x27;s Jungle Parkway<span>Geras</span></dd>
+          <dt>Flower Cup</dt>
+          <dd>N64 Royal Raceway<span>That1loser4</span></dd>
+          <dd>DS Delfino Square<span>Yosh Fr</span></dd>
+          <dd>Wii Maple Treeway<span>That1loser4</span></dd>
+          <dd>GBA Bowser Castle 2<span>That1loser4</span></dd>
+          <dt>Star Cup</dt>
+          <dd>DS Airship Fortress<span>That1loser4</span></dd>
+          <dd>3DS Cheep-Cheep Lagoon<span>That1loser4</span></dd>
+          <dd>GBA Luigi Circuit<span>ExxitZero</span></dd>
+          <dd>Wii Wario&#x27;s Gold Mine<span>cristian64</span></dd>
+          <dt>Special Cup</dt>
+          <dd>3DS Rosalina&#x27;s Ice World<span>King Boo Gaming</span></dd>
+          <dd>Wii Bowser&#x27;s Castle<span>That1loser4</span></dd>
+          <dd>SNES Mario Circuit 4<span>That1loser4</span></dd>
+          <dd>DS Rainbow Road<span>That1loser4</span></dd>
+        </dl>
+      </div>
+      <div class="cup-page">
+        <dl>
+          <dt>Mushroom Cup</dt>
+          <dd>N64 Luigi Raceway<span>Newgame+ LD</span></dd>
+          <dd>SNES Donut Plains 3<span>Lucas101</span></dd>
+          <dd>GBA Shy Guy Beach<span>Cherry, riidefi</span></dd>
+          <dd>Wii Toad&#x27;s Factory<span>King Boo Gaming</span></dd>
+          <dt>Flower Cup</dt>
+          <dd>N64 Frappe Snowland<span>ExxitZero</span></dd>
+          <dd>GBA Riverside Park<span>ExxitZero</span></dd>
+          <dd>3DS Toad Circuit<span>ExxitZero</span></dd>
+          <dd>DS Desert Hills<span>Majas de pic</span></dd>
+          <dt>Star Cup</dt>
+          <dd>SNES Mario Circuit 3<span>Lucas101</span></dd>
+          <dd>GP Mario Beach<span>That1loser4</span></dd>
+          <dd>Wii DK Summit<span>Vodquik, Dan The Police</span></dd>
+          <dd>N64 Yoshi Valley<span>Newgame+ LD, Casini Loogi</span></dd>
+          <dt>Special Cup</dt>
+          <dd>DS Mario Circuit<span>Majas de pic</span></dd>
+          <dd>GP Waluigi Stadium<span>That1loser4</span></dd>
+          <dd>Wii Dry Dry Ruins<span>Rex, Newgame+ LD</span></dd>
+          <dd>N64 Bowser&#x27;s Castle<span>The Potato Guy</span></dd>
+        </dl>
+      </div>
+      <div class="cup-page">
+        <dl>
+          <dt>Retro 1</dt>
+          <dd>SNES Battle Course 1<span>That1loser4</span></dd>
+          <dd>N64 Big Donut<span>That1loser4</span></dd>
+          <dd>DS Nintendo DS<span>Retrostyle12</span></dd>
+          <dd>GBA Battle Course 4<span>That1loser4</span></dd>
+          <dd>Wii Block Plaza<span>That1loser4</span></dd>
+          <dd>3DS Sherbet Rink<span>That1loser4</span></dd>
+          <dt>Retro 2</dt>
+          <dd>N64 Skyscraper<span>That1loser4</span></dd>
+          <dd>Wii Funky Stadium<span>Bruh de la Boi</span></dd>
+          <dd>3DS Wuhu Town<span>That1loser4</span></dd>
+          <dd>GBA Battle Course 2 US<span>That1loser4</span></dd>
+          <dd>SNES Battle Course 2<span>That1loser4</span></dd>
+          <dd>DS Tart Top<span>ThijsFire</span></dd>
+          <dt>Retro 3</dt>
+          <dd>DS Palm Shore<span>That1loser4</span></dd>
+          <dd>GBA Battle Course 1<span>That1loser4</span></dd>
+          <dd>Wii Delfino Pier<span>That1loser4</span></dd>
+          <dd>SNES Battle Course 3<span>That1loser4</span></dd>
+          <dd>N64 Double Deck<span>Retrostyle12</span></dd>
+          <dd>3DS Honeybee Hive<span>That1loser4</span></dd>
+          <dt>Retro 4</dt>
+          <dd>GBA Battle Course 3<span>That1loser4</span></dd>
+          <dd>SNES Battle Course 4<span>That1loser4</span></dd>
+          <dd>N64 Block Fort<span>That1loser4</span></dd>
+          <dd>Wii Thwomp Desert<span>That1loser4</span></dd>
+          <dd>DS Twilight House<span>That1loser4</span></dd>
+          <dd>Wii Chain Chomp Wheel<span>That1loser4</span></dd>
+          <dt>Retro 5</dt>
+          <dd>Plumbing Plaza<span>Crow8028</span></dd>
+          <dd>Battle Fort<span>Sir LoLz</span></dd>
+          <dd>Cloud Castle<span>Crow8028</span></dd>
+          <dd>Hyrule Castle<span>tarsa129</span></dd>
+          <dd>Rainbow Rally<span>Crow8028</span></dd>
+          <dd>Final Destination<span>Crow8028</span></dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section id="skins">
+    <div class="menu-head">
+    <div>
+    <h2>70 skins</h2>
+    <p class="intro">For all 20 characters and 16 of the karts. A custom character selection screen with skins added for every character that can be hotswapped with X/Y!</p>
+    </div>
+    <figure class="real"><a href="img/skins.jpg"><img src="img/skins.jpg" width="960" height="708" alt="The character select with four players in their karts: Gooigi and Metal Mario in the blue Red Fire, Holidaisy and Bride Peach in the Heart Coach, Dry Bowser Jr. and Dark Lava Bowser in the Homie kart, Bus Driver Waluigi and Bull Wario in the DeLorean" loading="lazy"></a><figcaption>Skins on the character select</figcaption></figure>
+    </div>
+    <div class="skin-tabs tabs">
+      <input type="radio" name="skins" id="skins-0" checked><label for="skins-0">Light</label>
+      <input type="radio" name="skins" id="skins-1"><label for="skins-1">Medium</label>
+      <input type="radio" name="skins" id="skins-2"><label for="skins-2">Heavy</label>
+      <input type="radio" name="skins" id="skins-3"><label for="skins-3">Karts</label>
+      <div class="skins">
+        <div><b>Baby Mario</b><span class="labels"><span>BABY PEACH</span></span></div>
+        <div><b>Baby Luigi</b><span class="labels"><span>WALUIGI</span><span>BABY DAISY</span></span></div>
+        <div><b>Toad</b><span class="labels"><span>BLUE</span><span>KIRBY</span><span>GOOMBA</span><span>SHY GUY</span><span>FUNKY</span></span></div>
+        <div><b>Toadette</b><span class="labels"><span>PURPLE</span><span>MAID</span></span></div>
+        <div><b>Koopa Troopa</b><span class="labels"><span>GOLD</span><span>DRY BONES</span><span>SAILOR</span><span>POSTMAN</span></span></div>
+        <div><b>Paratroopa</b><span class="labels"><span>BLUE</span><span>POSTMAN</span></span></div>
+        <div><b>Diddy Kong</b><span class="labels"><span>BLACK</span><span>DK JR.</span></span></div>
+        <div><b>Bowser Jr.</b><span class="labels"><span>DRY</span></span></div>
+      </div>
+      <div class="skins">
+        <div><b>Mario</b><span class="labels"><span>METAL</span><span>ROBO</span><span>SM64</span></span></div>
+        <div><b>Luigi</b><span class="labels"><span>GOOIGI</span><span>ROBO</span><span>SM64</span></span></div>
+        <div><b>Peach</b><span class="labels"><span>BRIDE</span></span></div>
+        <div><b>Daisy</b><span class="labels"><span>HOLIDAISY</span><span>ROSALINA</span><span>MALON</span></span></div>
+        <div><b>Yoshi</b><span class="labels"><span>BLUE</span><span>RAINBOW</span><span>TOM NOOK</span></span></div>
+        <div><b>Birdo</b><span class="labels"><span>YELLOW</span><span>ISABELLE</span></span></div>
+        <div><b>Waluigi</b><span class="labels"><span>BUS DRIVER</span></span></div>
+      </div>
+      <div class="skins">
+        <div><b>Donkey Kong</b><span class="labels"><span>WHITE</span></span></div>
+        <div><b>Bowser</b><span class="labels"><span>DARK LAVA</span><span>HOMIE</span></span></div>
+        <div><b>Wario</b><span class="labels"><span>BULL</span></span></div>
+        <div><b>Petey Piranha</b><span class="labels"><span>PUTRID</span><span>BOB-OMB</span></span></div>
+        <div><b>King Boo</b><span class="labels"><span>PINK</span></span></div>
+      </div>
+      <div class="skins karts">
+        <div><b>Red Fire</b><span class="labels"><span>BLUE</span><span>ROBO</span></span></div>
+        <div><b>Green Fire</b><span class="labels"><span>ROBO</span></span></div>
+        <div><b>Bloom Coach</b><span class="labels"><span>BUMBLE V</span><span>ROSALINA</span></span></div>
+        <div><b>Turbo Yoshi</b><span class="labels"><span>MINECART</span></span></div>
+        <div><b>Turbo Birdo</b><span class="labels"><span>BIRTHDAY</span></span></div>
+        <div><b>Goo-Goo Buggy</b><span class="labels"><span>BABY PEACH</span></span></div>
+        <div><b>Rattle Buggy</b><span class="labels"><span>LANDSHIP</span><span>BABY DAISY</span></span></div>
+        <div><b>Toad Kart</b><span class="labels"><span>STD. MR</span><span>STD. SG</span><span>GOOMBA</span><span>FUNKY</span></span></div>
+        <div><b>Toadette Kart</b><span class="labels"><span>MAID</span></span></div>
+        <div><b>Koopa Dasher</b><span class="labels"><span>BOLT BUGGY</span><span>DRY BONES</span><span>POSTMAN</span></span></div>
+        <div><b>Para-Wing</b><span class="labels"><span>POSTMAN</span></span></div>
+        <div><b>Barrel Train</b><span class="labels"><span>THOMAS</span><span>MAID</span><span>SLEIGH</span><span>CRAFTY</span><span>DK JR.</span></span></div>
+        <div><b>Koopa King</b><span class="labels"><span>HOMIE</span></span></div>
+        <div><b>Bullet Blaster</b><span class="labels"><span>DRY</span></span></div>
+        <div><b>Wario Car</b><span class="labels"><span>DELOREAN</span></span></div>
+        <div><b>Parade Kart</b><span class="labels"><span>CROWN</span></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="lan">
+    <div class="menu-head two">
+    <div>
+    <h2>Proper LAN support</h2>
+    <p class="intro">Every Ultra menu setting is synced over LAN and works on every console! LAN play also gets a character select for up to eight players and a faster connection setup.</p>
+    </div>
+    <figure class="real"><a href="img/lan-eight.jpg"><img src="img/lan-eight.jpg" width="960" height="708" alt="Select Characters in LAN play with eight cards, P1 to P8 in their own colors: five say READY with their driver, partner and kart, P3 is on its kart, P4 on its driver and P8 on its partner" loading="lazy"></a><figcaption>Eight players</figcaption></figure>
+    <figure class="real"><a href="img/lan-four.jpg"><img src="img/lan-four.jpg" width="960" height="708" alt="Select Characters in LAN play with four cards: P1 and P3 are ready with Petey and Toadette in the Boo Pipes and Bowser and Yoshi in the DK Jumbo, P2 and P4 are still picking a partner" loading="lazy"></a><figcaption>Four players</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="more">
+    <h2>And way more</h2>
+    <div class="more">
+      <div>
+        <h3 class="list-title">Playing together</h3>
+        <dl class="changes">
+          <div><dt>Teams</dt><dd>Red against blue in Versus and in all three battles! With four players it's 1 and 2 against 3 and 4, 1 and 3 against 2 and 4, or 1 and 4 against 2 and 3, and CPUs fill the smaller team. Items spare your teammates, every place in Versus scores Grand Prix points for its team, and in battle one kart's win is a win for its whole team.</dd></div>
+          <div><dt>Grand Prix for four</dt><dd>Three or four players in a Grand Prix, where the game stops at two.</dd></div>
+          <div><dt>Duplicate characters</dt><dd>Take a character someone else has, or the same one twice in your own kart.</dd></div>
+          <div><dt>Kart stats</dt><dd>Six rows of stars for every kart on the character select, also with two to four players, where the game shows none.</dd></div>
+          <div><dt>Everything unlocked</dt><dd>Every cup, class, character and kart from the first start, 200cc included, even without a save.</dd></div>
+        </dl>
+      </div>
+      <div>
+        <h3 class="list-title">Picture and sound</h3>
+        <dl class="changes">
+          <div><dt>Native 16:9</dt><dd>Every screen gets a wider view, including split screen and Time Trial. The game asks once at the first start, and it's a setting on your memory card.</dd></div>
+          <div><dt>480p by default</dt><dd>Progressive scan on a component cable, without the question at the start, and a sharper filter than the game's own.</dd></div>
+          <div><dt>Music in stereo</dt><dd>All music of the extra courses in stereo, and mono music has been patched to properly play from both speakers.</dd></div>
+          <div><dt>Course intro</dt><dd>Every extra course opens with its name and its maker, and every race with the game mode that's on.</dd></div>
+          <div><dt>Better race results</dt><dd>The results stay on the screen until P1 presses A, as in Mario Kart 64.</dd></div>
+        </dl>
+      </div>
+      <div>
+        <h3 class="list-title">Fixes</h3>
+        <dl class="changes">
+          <div><dt>Loading improvements</dt><dd>Up to 25% shorter loading times, from faster code and a better order of the files on the disc.</dd></div>
+          <div><dt>150cc first</dt><dd>The class select starts on 150cc instead of 50cc.</dd></div>
+          <div><dt>D-pad in the menus</dt><dd>Every menu of the game takes the D-pad as well as the stick, from the title screen to the pause menu.</dd></div>
+          <div><dt>Settings in the save</dt><dd>The settings of the Ultra menu stay on your memory card. The rules last until you turn the console off.</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="install" id="install">
+    <h2>Ultra Patcher</h2>
+    <p class="intro" data-soon><strong>Coming soon.</strong> A free patch for your own disc, applied right here in your browser.</p>
+    <p class="intro">Version <b data-fact="version">0.3 BETA</b>.</p>
+    <ol class="steps">
+      <li><b>Pick your dump</b> of Double Dash (USA): ISO, GCM, CISO, GCZ or RVZ.</li>
+      <li><b>Make Ultra</b> and play it in Dolphin or on your GameCube.</li>
+      <li><b>Optional:</b> for 16:9 in Dolphin from the very first screen, put <a href="GM4EJ8.ini" download>GM4EJ8.ini</a> in its GameSettings folder.
+        <details class="where"><summary>Where's that?</summary>Windows: <code>Documents\Dolphin Emulator\GameSettings</code>, or <code>User\GameSettings</code> next to Dolphin.exe in a portable install.<br>macOS: <code>~/Library/Application Support/Dolphin/GameSettings</code>.<br>Linux: <code>~/.local/share/dolphin-emu/GameSettings</code>.<br>Flatpak: <code>~/.var/app/org.DolphinEmu.dolphin-emu/data/dolphin-emu/GameSettings</code>.</details></li>
+    </ol>
+    <div class="patcher" data-game="mkdd" hidden>
+      <div class="top"><span>Ultra Patcher</span></div>
+      <div class="body">
+        <label class="slot" data-p="slot">
+          <span class="disc"></span>
+          <span><b data-p="disc-name">Your disc</b><span data-p="disc-hint">A dump of Double Dash (USA), GM4E01: ISO, GCM, CISO, GCZ or RVZ. Drop it here or click.</span></span>
+          <input type="file" accept=".iso,.gcm,.ciso,.gcz,.rvz" data-p="disc">
+        </label>
+        <label class="slot file" data-p="patch-step">
+          <span><b>The patch</b><span>The .patch file of this game.</span></span>
+          <input type="file" accept=".patch" data-p="patch">
+        </label>
+        <div class="lcd">
+          <div data-p="disc-info"></div>
+          <div data-p="patch-info"></div>
+          <div data-p="status"></div>
+        </div>
+        <progress data-p="bar" max="1" value="0" hidden></progress>
+        <div class="row">
+          <div class="seg">
+            <label><input type="radio" name="format-mkdd" value="full" data-p="format" checked><span data-p="full">Full ISO</span></label>
+            <label><input type="radio" name="format-mkdd" value="compact" data-p="format"><span data-p="compact">Trimmed ISO</span></label>
+          </div>
+          <button data-p="go" disabled>Make Ultra</button>
+          <a class="save" data-p="save" hidden>Save the ISO</a>
+        </div>
+      </div>
+      <div class="foot">Needs the untouched USA disc, GM4E01. <a href="#clean" data-p="clean">Is my dump clean?</a></div>
+    </div>
+    <dialog class="check" id="clean">
+     <div>
+      <h3>Is my dump clean?</h3>
+      <p>The patch needs the untouched USA disc, GM4E01. If the patcher says your dump differs, check it: Dolphin verifies a dump under Properties, Verify. A clean one has these hashes.</p>
+      <dl class="release">
+        <dt>MD5</dt><dd class="hash" data-fact="retail.md5"></dd>
+        <dt>SHA-1</dt><dd class="hash" data-fact="retail.sha1"></dd>
+        <dt>CRC32</dt><dd class="hash" data-fact="retail.crc32"></dd>
+      </dl>
+      <form method="dialog"><button>Close</button></form>
+     </div>
+    </dialog>
+  </section>
+
+  <section>
+    <h2>Changelog</h2>
+    <dl class="changes">
+      <div><dt>0.3 beta</dt><dd><ul>
+        <li>Fixed a crash at the award ceremony after every Grand Prix.</li>
+        <li>Fixed a crash in battle when an item rule hands out a chain chomp.</li>
+        <li>Fixed a rare crash in bob-omb tag.</li>
+        <li>In a Grand Prix with three players the fourth screen follows P1, like in Versus.</li>
+        <li>Dry Dry Ruins updated to v1.2.</li>
+      </ul></dd></div>
+      <div><dt>0.2 beta</dt><dd><ul>
+        <li>Balloon race, a new game mode!</li>
+        <li>Knockout shows who's in the danger zone.</li>
+        <li>Red against blue teams in Versus and battle.</li>
+        <li>CPUs in battle mode.</li>
+        <li>Versus and battle for one player.</li>
+        <li>16 more retro tracks and 6 battle stages on a new page, Retro 5.</li>
+        <li>X shows a list of all tracks and battle stages, by console or from A to Z.</li>
+        <li>Triple shells circle your kart, and every character can get them.</li>
+        <li>Fragile karts that spin, freeze or blow up on contact!</li>
+        <li>Battles at 50cc to 200cc.</li>
+        <li>The Ultra menu works in LAN play, which also gets a character select.</li>
+        <li>The race results stay on the screen until P1 presses A, like in Mario Kart 64.</li>
+        <li>Up to 25% shorter loading times.</li>
+        <li>Tricks are on R and L, side attack and look back on the D-pad.</li>
+        <li>Held items sit right behind every kart.</li>
+        <li>Shells don't sink into the ground anymore.</li>
+        <li>Tricks work off more bumps.</li>
+        <li>A crash shows its screen right away, with your settings for a bug report.</li>
+        <li>Improved pause menu.</li>
+        <li>480p by default.</li>
+        <li>The D-pad works in every menu, and 150cc comes first.</li>
+      </ul></dd></div>
+      <div><dt>0.1 beta</dt><dd>Initial release.</dd></div>
+    </dl>
+  </section>
+
+  <section class="credits">
+    <h2>Credits</h2>
+    <p class="made">A very fun reverse engineering project, mostly done by me. :) However, it couldn't exist without these awesome people. Thank you!!</p>
+    <ul>
+      <li><b>Tracks and battle stages</b> by That1loser4, who made most of them and the MKDD Plus lineup, and by Atlas, Bruh de la Boi, Casini Loogi, Cherry, cristian64, Crow8028, Dan The Police, ExxitZero, Geras, GoombaNL, King Boo Gaming, Lucas101, Majas de pic, Newgame+ LD, Pao yeez, Retrostyle12, Rex, riidefi, Sir LoLz, tarsa129, The Potato Guy, ThijsFire, Vodquik, Yosh Fr and YoshiDude4, with their music, from the packages they published.</li>
+      <li><b>Skins</b> by Crow8028, tarsa129, ThijsFire, M64, LuvrosIV, Insidious_NX, NGT, EZKSupernova, Some-Crappy-Edits, Whipinsnapper, New Super Bowser World DX and Rain Weatherly, with Annn_Dhalia_Snfl, ordartz, RenolY2 and travixman, from <a href="https://mkdd.org">mkdd.org</a> and <a href="https://gamebanana.com">GameBanana</a>.</li>
+      <li><b>Codes</b>: Ralf and Kester's 16:9, Ralf's AI codes behind CPU level, AdolescentSeagull's Grand Prix for three and four and Demo Results Animation, cristian64's Everything Unlocked, Robichu's 200cc, and the LAN codes of cristian64, stebler, AdolescentSeagull and Pickpickles.</li>
+      <li><b>Thanks</b> to cristian64 for MKDD Extender and RenolY2 for gc-c-kit, to the doldecomp team, the Mario Kart 64 and Mario Kart Wii decompilations and vabold's Kinoko for mapping out these games, to SuperSamus for the extra race memory, and to Double Dash Deluxe for the ideas behind the pause and 480p.</li>
+    </ul>
+  </section>
+  <footer>
+    <p>A fun passion project by <span class="by">AsmGecko</span> for my friend group. :)</p>
+    <p>A free fan project, not affiliated with, endorsed or sponsored by Nintendo. Mario Kart: Double Dash!!, Super Mario Strikers and their characters are trademarks of Nintendo. No game files are shared here: the patch only works with your own disc.</p>
+  </footer>
+</div>
+<script src="../ultra-menu.js"></script>
+<script src="menu.js"></script>
+<script src="../patcher-core.js"></script>
+<script src="../patcher.js"></script>
+<script src="../lightbox.js"></script>
+</body>
+</html>

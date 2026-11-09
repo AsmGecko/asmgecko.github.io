@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noimageindex, noarchive, nosnippet">
+<script src="../gate.js"></script>
+<title>Strikers Ultra</title>
+<meta name="description" content="A mod of Super Mario Strikers: five game modes, captain powers, red cards, rotating teams and 34 settings, for the GameCube and Dolphin.">
+<style>
+/* The page of Strikers Ultra, like the one of Double Dash: the title, then the Ultra menu as the game's
+   options pages draw it, to try out (ultra-menu.js with menu.js), with what a row does beside it, then what's always
+   on, and the credits. The menu keeps the blue of the game in the light theme too. Offline on purpose: system fonts
+   only. */
+:root {
+  --bg: #0a1a30; --ink: #f2f6fc; --muted: #9fb2cc; --line: #23426a; --edge: #2f5d93;
+  --gold: #ffc21a; --grass-a: #2f8f3a; --grass-b: #3aa646;
+  --sk-shadow: 0 2px 0 #0b1f3a, 1px 0 0 #0b1f3a, -1px 0 0 #0b1f3a, 0 0 8px #0b1f3a99;
+  --sk-blue: radial-gradient(85% 75% at 50% 48%, #4f9fda, #2468a6 50%, #143f70);
+  --heavy: "Segoe UI Black", "Arial Black", "Helvetica Neue", sans-serif;
+  --body: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "Cascadia Mono", ui-monospace, Consolas, monospace;
+  --bad: #ff6b5e; --on-gold: #1a1300;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #eef3f9; --ink: #13233d; --muted: #52637d; --line: #cbd8e8; --edge: #9db5d3;
+    --gold: #a86f00;
+    --bad: #b0282e; --on-gold: #ffffff;
+    color-scheme: light;
+  }
+}
+:root[data-theme="dark"] { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.6 var(--body); }
+img { max-width: 100%; height: auto; }
+.pitch { height: 16px; background: repeating-linear-gradient(90deg, var(--grass-a) 0 32px, var(--grass-b) 32px 64px); }
+.page { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+.crumbs { padding: 14px 0 0; font-size: 14px; color: var(--muted); }
+.crumbs a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
+.crumbs a:hover { color: var(--ink); }
+.heavy { font-family: var(--heavy); font-weight: 900; font-style: italic; text-transform: uppercase; }
+h2 { font-family: var(--heavy); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: clamp(24px, 3.2vw, 34px); line-height: 1.1; margin: 0 0 6px; }
+.intro { color: var(--muted); margin: 0 0 18px; max-width: 72ch; }
+.intro strong { color: var(--ink); font-weight: 600; }
+section { padding: 56px 0 0; }
+
+/* The title */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); gap: 36px; align-items: center; padding: 28px 0 0; }
+.eyebrow { font-family: var(--mono); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.hero h1 { margin: 6px 0 0; font-size: clamp(26px, 3.4vw, 40px); line-height: 1.05; }
+.hero h1 img { display: block; width: min(360px, 80%); margin: 8px 0 0 -8px; }
+.lede { font-size: clamp(17px, 2vw, 20px); margin: 18px 0 14px; max-width: 58ch; }
+.killer { list-style: none; margin: 0 0 22px; padding: 0; display: grid; gap: 7px; max-width: 62ch; }
+.killer li { padding-left: 22px; position: relative; color: var(--muted); font-size: 16px; line-height: 1.4; }
+.killer li::before { content: ""; position: absolute; left: 0; top: 7px; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); }
+.killer b { color: var(--ink); font-weight: 700; margin-right: 6px; }
+.facts { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0 0 22px; color: var(--muted); font-size: 15px; }
+.facts b { color: var(--gold); font-family: var(--heavy); font-style: italic; font-size: 18px; margin-right: 4px; }
+.cta { display: inline-flex; flex-wrap: wrap; gap: 0 10px; align-items: center; padding: 10px 18px; border-radius: 999px; border: 2px solid var(--line); color: var(--muted); text-decoration: none; }
+.cta b { color: var(--ink); }
+.cta:hover { border-color: var(--gold); }
+.hero .shot { display: block; width: 100%; border-radius: 10px; box-shadow: 0 18px 50px #0007; }
+
+/* The menu: the options page of the game, always in its blue */
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 24px; align-items: start; outline: none; }
+.stage:focus-visible .sk { box-shadow: 0 0 0 3px var(--gold); }
+.sk { position: relative; overflow: hidden; border-radius: 8px; color: #fff; text-shadow: var(--sk-shadow); box-shadow: 0 20px 60px #0007;
+      font-family: var(--heavy); font-weight: 900; font-style: italic; text-transform: uppercase;
+      background: linear-gradient(180deg, #13243f 0 64px, transparent 64px calc(100% - 22px), #13243f calc(100% - 22px)), var(--sk-blue); }
+.sk button { font: inherit; color: inherit; text-shadow: inherit; text-transform: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.sk-head { display: flex; justify-content: center; align-items: center; gap: 18px; height: 64px; padding-top: 26px; }
+.sk-head img { height: 28px; width: auto; display: block; filter: drop-shadow(0 2px 0 #0b1f3a); }
+.sk-head [data-um=header] { color: #ffc800; font-size: 20px; white-space: pre; min-width: 9.5em; text-align: center; }
+.sk-body { padding: 18px 0 8px; min-height: 330px; }
+.sk-rows .um-row { position: relative; display: grid; grid-template-columns: 1fr 1fr; align-items: center; min-height: 40px; cursor: pointer; }
+.sk-rows .um-row::before { content: ""; position: absolute; left: -24px; top: 3px; bottom: 3px; width: calc(50% + 12px); background: linear-gradient(90deg, #0d1e36f0, #1a3557d8); transform: skewX(-20deg); opacity: 0; }
+.sk-rows .um-row.um-on::before { opacity: 1; }
+.um-name { position: relative; text-align: right; padding-right: 28px; font-size: 19px; letter-spacing: 0.01em; }
+.um-on .um-name { font-size: 23px; }
+.um-value { position: relative; display: grid; grid-template-columns: 28px 1fr 28px; align-items: center; padding: 0 6% 0 4%; }
+.um-pill { text-align: center; font-size: 19px; }
+.um-pill.v-on { color: #50e050; }
+.um-pill.v-off { color: #909090; }
+.um-on .um-pill:not(.v-on):not(.v-off) { color: #ffb52e; }
+.sk .um-arrow { visibility: hidden; font-size: 13px; padding: 6px 0; }
+.um-on .um-arrow { visibility: visible !important; }
+.sk-help { margin: 14px 0 0; padding: 0 28px; font-size: 15px; line-height: 1.4; min-height: 2.8em; max-width: 60ch; text-transform: none; }
+.sk-foot { height: 22px; }
+.sk-pages { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 12px 4px 0; }
+.um-tab { font-family: var(--heavy); font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 14px; color: var(--muted); background: none; border: 0; padding: 4px 0; cursor: pointer; border-bottom: 3px solid transparent; }
+.um-tab[aria-selected=true] { color: var(--gold); border-color: var(--gold); }
+
+/* What a row does: beside the menu, or under the chosen row on a phone */
+.panel { position: sticky; top: 16px; }
+.um-detail img { display: block; width: 100%; border-radius: 8px; }
+.um-card { aspect-ratio: 4 / 3; border-radius: 8px; display: grid; place-items: center; padding: 20px; text-align: center; color: #fff; background: var(--sk-blue); font-family: var(--heavy); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: 28px; line-height: 1.1; text-shadow: var(--sk-shadow); }
+.panel h3 { font-size: 22px; line-height: 1.2; margin: 14px 0 4px; }
+.um-text { margin: 0 0 10px; font: 400 16px/1.55 var(--body); text-transform: none; text-shadow: none; font-style: normal; }
+.um-values { margin: 0; color: var(--muted); font-size: 14px; }
+
+/* Always on */
+.strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 18px; }
+.strip figure { margin: 0; }
+.strip figure.wide { grid-column: span 2; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.strip img, .strip .tile { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; }
+.strip .tile { display: grid; place-items: center; padding: 16px; text-align: center; color: #fff; background: var(--sk-blue); font-size: 24px; line-height: 1.1; text-shadow: var(--sk-shadow); }
+.strip figcaption { font-size: 15px; color: var(--muted); margin-top: 8px; }
+.strip .wide figcaption { margin-top: 0; font-size: 16px; }
+.strip figcaption b { display: block; color: var(--ink); font-size: 18px; }
+.changes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 36px; margin: 0; }
+.changes div { border-top: 1px solid var(--line); padding-top: 10px; color: var(--muted); font-size: 16px; }
+.changes dt { color: var(--ink); font-weight: 700; }
+.changes dd { margin: 0; }
+.changes dd ul { margin: 4px 0 0; padding-left: 20px; display: grid; gap: 4px; }
+.install p { color: var(--muted); max-width: 64ch; }
+.install strong { color: var(--ink); }
+.steps { margin: 0 0 22px; padding: 0; list-style: none; counter-reset: step; display: grid; gap: 10px; max-width: 64ch; }
+.steps li { counter-increment: step; position: relative; padding-left: 44px; color: var(--muted); min-height: 32px; }
+.steps li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: var(--on-gold); font-family: inherit; font-weight: 700; }
+.steps .where { margin-top: 4px; font-size: 14px; }
+.steps .where summary { cursor: pointer; color: var(--ink); }
+.steps .where code { font-family: var(--mono); font-size: 13px; overflow-wrap: anywhere; }
+.steps li b { color: var(--ink); font-weight: 700; font-family: inherit; }
+.check { max-width: min(64ch, calc(100vw - 32px)); border: 2px solid var(--edge); border-radius: 14px; padding: 0; color: var(--muted); font-size: 15px; background: var(--bg); color-scheme: inherit; }
+.check > div { padding: 18px 22px; }
+.check::backdrop { background: #0a1030cc; }
+.check h3 { margin: 0 0 8px; color: var(--ink); font-size: 20px; }
+.check p { margin: 10px 0; }
+.check form { margin: 14px 0 0; }
+.check form button { font: inherit; font-weight: 600; padding: 8px 18px; border-radius: 999px; border: 1px solid var(--edge); background: transparent; color: var(--ink); cursor: pointer; }
+.release { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 0 0 6px; }
+.release dt { color: var(--muted); }
+.release dd { margin: 0; }
+.release .hash { font-family: var(--mono); font-size: 12px; word-break: break-all; align-self: center; }
+.credits p { color: var(--muted); max-width: 75ch; }
+.by { color: var(--gold); font-family: var(--heavy); font-weight: 900; font-style: italic; }
+.credits .made { font-size: 1em; color: var(--ink); margin: 0 0 14px; }
+.credits ul { color: var(--muted); padding-left: 20px; max-width: 75ch; display: grid; gap: 8px; }
+.credits li b { color: var(--ink); font-weight: 700; }
+.patcher { margin-top: 18px; max-width: 680px; border-radius: 18px; border: 2px solid var(--edge); background: linear-gradient(180deg, #121d4d, #0d1538); box-shadow: 0 24px 60px #0008, inset 0 1px 0 #ffffff22; overflow: hidden; color: #f1f4fc; }
+.patcher [hidden], .patcher[hidden] { display: none !important; }
+.patcher .top { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: linear-gradient(180deg, #ffe680, #ffb02a); color: #3a2400; font-family: var(--heavy); font-weight: 900; font-style: italic; letter-spacing: 0.08em; text-transform: uppercase; }
+.patcher .body { padding: 22px; display: grid; gap: 16px; }
+.slot { position: relative; display: grid; grid-template-columns: 96px 1fr; gap: 18px; align-items: center; padding: 18px; border-radius: 14px; border: 2px dashed #3c5aa8; background: #0a1030; cursor: pointer; }
+.slot:hover, .slot.drag, .slot:has(input:focus-visible) { border-color: #ffcf3a; }
+.slot.file { grid-template-columns: 1fr; padding: 12px 18px; }
+.slot input { position: absolute; opacity: 0; width: 0; height: 0; }
+.slot b { display: block; font-family: var(--heavy); font-weight: 900; font-style: italic; font-size: 20px; }
+.slot span span { color: #a9b4d2; font-size: 15px; }
+.disc { width: 96px; height: 96px; border-radius: 50%; position: relative; background: repeating-conic-gradient(#1a2660 0 15deg, #121c4c 15deg 30deg); box-shadow: 0 6px 18px #0009; }
+.disc::after { content: ""; position: absolute; inset: 36px; border-radius: 50%; background: #0a1030; box-shadow: 0 0 0 6px #3c5aa8 inset; }
+.loaded .disc { background: conic-gradient(from 0deg, #cbd5ff, #6b7bd6, #e8ecff, #5566c9, #cbd5ff); }
+.loaded .disc::after { box-shadow: 0 0 0 6px #a9b4d2 inset; }
+.lcd { border-radius: 10px; background: #061023; border: 1px solid #1b2a5c; box-shadow: inset 0 2px 12px #000a; padding: 12px 16px; font-family: var(--mono); font-size: 14px; color: #3fd27a; display: grid; gap: 4px; min-height: 42px; }
+.lcd div:empty { display: none; }
+.lcd div::before { content: "● "; }
+.lcd .wait { color: #6edcff; }
+.lcd .wait::before { content: "○ "; }
+.lcd .bad { color: #ff6b5e; }
+.patcher progress { width: 100%; height: 14px; appearance: none; border-radius: 999px; background: #061023; border: 1px solid #1b2a5c; overflow: hidden; }
+.patcher progress::-webkit-progress-bar { background: transparent; }
+.patcher progress::-webkit-progress-value { background: repeating-linear-gradient(90deg, #ffcf3a 0 10px, #ffe680 10px 20px); }
+.patcher progress::-moz-progress-bar { background: repeating-linear-gradient(90deg, #ffcf3a 0 10px, #ffe680 10px 20px); }
+.patcher .row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
+.seg { display: inline-flex; border: 1px solid #3c5aa8; border-radius: 999px; padding: 3px; background: #0a1030; }
+.seg label { position: relative; padding: 6px 14px; border-radius: 999px; font-size: 15px; color: #a9b4d2; cursor: pointer; }
+.seg input { position: absolute; opacity: 0; width: 0; height: 0; }
+.seg label:has(input:checked) { background: #3c5aa8; color: #f1f4fc; }
+.seg label:has(input:focus-visible) { outline: 2px solid #ffcf3a; }
+.patcher button, .patcher .save { font: inherit; font-family: var(--heavy); font-weight: 900; font-style: italic; font-size: 20px; letter-spacing: 0.04em; padding: 14px 30px; border-radius: 999px; border: 0; background: #ffcf3a; color: #1a1300; cursor: pointer; text-decoration: none; box-shadow: 0 6px 0 #b07600, 0 12px 24px #0008; }
+.patcher button:disabled { opacity: 0.4; cursor: default; box-shadow: none; }
+.patcher .foot { padding: 10px 22px 16px; font-size: 14px; color: #a9b4d2; border-top: 1px solid #1b2a5c; }
+.patcher .foot a { color: #ffcf3a; }
+footer { margin-top: 44px; padding: 20px 0 48px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+footer p { margin: 0 0 6px; }
+footer b { color: var(--gold); }
+
+@media (max-width: 960px) {
+  .stage { grid-template-columns: minmax(0, 1fr) 320px; }
+  .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  body { font-size: 16px; }
+  section { padding-top: 44px; }
+  .slot { grid-template-columns: 64px 1fr; gap: 14px; padding: 14px; }
+  .disc { width: 64px; height: 64px; }
+  .disc::after { inset: 24px; }
+  .patcher .body { padding: 16px; }
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 20px; padding-top: 16px; }
+  .hero .shot { order: -1; }
+  .cta { border-radius: 16px; font-size: 15px; }
+  .stage { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .panel { display: none; }
+  .sk { background: linear-gradient(180deg, #13243f 0 54px, transparent 54px calc(100% - 18px), #13243f calc(100% - 18px)), var(--sk-blue); }
+  .sk-head { gap: 10px; height: 54px; padding-top: 18px; }
+  .sk-head img { height: 22px; }
+  .sk-head [data-um=header] { font-size: 16px; }
+  .sk-body { min-height: 0; padding-top: 12px; }
+  .sk-rows .um-row { grid-template-columns: 1.15fr 1fr; min-height: 44px; }
+  .um-name { font-size: 14px; padding-right: 14px; }
+  .um-on .um-name { font-size: 16px; }
+  .um-value { grid-template-columns: 26px 1fr 26px; padding: 0 2px; }
+  .um-pill { font-size: 14px; }
+  .sk .um-arrow { padding: 10px 0; }
+  .sk .um-detail { margin: 6px 12px 10px; background: #0b1f3acc; border-radius: 10px; padding: 10px 12px; }
+  .sk .um-detail img { margin-bottom: 8px; }
+  .sk .um-text { margin: 0; font-size: 15px; color: #fff; }
+  .sk-help { display: none; }
+  .sk-foot { height: 18px; }
+  .sk-pages { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .strip { grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 80%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
+  .strip figure { scroll-snap-align: start; }
+  .strip figure.wide { grid-column: auto; display: block; }
+  .strip .wide figcaption { margin-top: 8px; font-size: 15px; }
+  .changes { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+</head>
+<body>
+<div class="pitch" aria-hidden="true"></div>
+<div class="page">
+  <nav class="crumbs"><a href="../">Ultra</a> · <a href="../mkdd/">Double Dash Ultra</a></nav>
+
+  <header class="hero">
+    <div>
+      <h1 class="heavy">Super Mario Strikers<img src="img/ultra-logo.png" width="768" height="319" alt="Ultra"></h1>
+      <p class="lede">The first real Strikers mod for the GameCube! Five game modes, captain powers and the beta content back in the game. Tested on real GameCube hardware!</p>
+      <ul class="killer">
+        <li><b>The Ultra menu</b>Game modes and more than 30 new settings, from red cards to how hard the ball bounces!</li>
+        <li><b>Five game modes</b>Short fuse for yourself or your team, golden ball, last man standing and strikes only!</li>
+        <li><b>Stop a Super Strike</b>Pick the right corner with the stick and your goalie saves it, unless it was perfect!</li>
+        <li><b>Best of 3, 5 or 7</b>Rematches count as a series now, with a winner at the end.</li>
+        <li><b>Captain powers</b>A custom superpower for every captain on the D-pad, built from removed beta content and the game's own effects.</li>
+        <li><b>Red cards and penalties</b>Fouls get carded now, two and you're off! And a brand new penalty shootout for tied matches!</li>
+        <li><b>Rotating teams</b>With four players the pairs change after every goal, and the standings at the end show who scored the most!</li>
+        <li><b>Beta content, switched back on</b>The Lost Palace, the Superhuman CPU, Bob-omb mines, the dark menu music and the sidekick strike.</li>
+        <li><b>Faster loading</b>Up to 59% shorter loading times! A Grudge Match in 11 seconds instead of 18, back to the menu in 3 instead of 8. The logos at the start take 4.6 seconds instead of 12, and A or START skips them.</li>
+        <li><b>And way more</b>Mirror matches, four new cameras, 60-minute matches, random teams, tuning.</li>
+      </ul>
+      <a class="cta" href="#install"><b data-soon>Coming soon</b><b data-ready hidden>Ultra Patcher</b><span data-soon>a free patch for your own disc</span><span data-ready hidden>Patch your disc now!</span></a>
+    </div>
+    <img class="shot" src="img/ultra-menu.jpg" width="640" height="477" alt="The Ultra menu in the game, on its Rules page with Game mode, Strike block, Captain powers, Penalties, Red cards and Rotating teams">
+  </header>
+
+  <section id="ultra-menu">
+    <h2>The Ultra menu</h2>
+    <p class="intro"><strong>Z</strong> opens it in the game. Below is the same menu: pick a row to see what it does.</p>
+    <div class="stage" id="menu">
+      <div>
+        <div class="sk">
+          <div class="sk-head">
+            <button data-um="prev" aria-label="Previous page"><img src="img/button-l.png" width="128" height="56" alt="L"></button>
+            <span data-um="header"></span>
+            <button data-um="next" aria-label="Next page"><img src="img/button-r.png" width="128" height="56" alt="R"></button>
+          </div>
+          <div class="sk-body">
+            <div class="sk-rows" data-um="rows"></div>
+            <p class="sk-help" data-um="about"></p>
+          </div>
+          <div class="sk-foot"></div>
+        </div>
+        <div class="sk-pages" data-um="tabs"></div>
+      </div>
+      <aside class="panel" data-um="panel"></aside>
+    </div>
+  </section>
+
+  <section id="pitch">
+    <h2>On the pitch</h2>
+    <div class="strip">
+      <figure class="wide">
+        <img src="img/captain-powers.jpg" width="722" height="510" alt="Donkey Kong's ground pound: a column of light, earth flying up and the players around him falling over" loading="lazy">
+        <figcaption><b>Captain powers</b>One per captain, on the D-pad, once the captain glows. Luigi's tornado is the beta's Twister.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/camera-diagonal.jpg" width="640" height="477" alt="The pitch seen from a corner: Yoshi in goal in front of the net, Mario and the Toads around the box" loading="lazy">
+        <figcaption><b>Four more cameras</b>Close, end to end, diagonal or retro top-down, also from the pause menu.</figcaption>
+      </figure>
+      <figure class="wide">
+        <img src="img/lost-stadium.jpg" width="722" height="430" alt="A pink and purple stadium with towers, arches and domes under a green sky, the pitch in the middle" loading="lazy">
+        <figcaption><b>The Lost Palace</b>Peach's stadium from the beta, back as the eighth stadium.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/shadow-mario.jpg" width="722" height="430" alt="The team intro before kickoff: a dark violet Mario with glowing yellow eyes, and two dark violet Toads behind him">
+        <figcaption><b>Mirror matches</b>The same captain on both sides, the away team in shadow, metal or gold.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="install" id="install">
+    <h2>Ultra Patcher</h2>
+    <p class="intro" data-soon><strong>Coming soon.</strong> A free patch for your own disc, applied in your browser.</p>
+    <p class="intro">Version <b data-fact="version">0.2 BETA</b>. Tested on real GameCube hardware and in Dolphin. A crash shows a screen you can send us a photo of.</p>
+    <ol class="steps">
+      <li><b>Pick your dump</b> of Super Mario Strikers (USA): ISO, GCM, CISO, GCZ or RVZ.</li>
+      <li><b>Make Ultra</b> and play it in Dolphin or on your GameCube.</li>
+      <li><b>Optional:</b> for 16:9 in Dolphin, put <a href="G4QEJ8.ini" download>G4QEJ8.ini</a> in its GameSettings folder.
+        <details class="where"><summary>Where's that?</summary>Windows: <code>Documents\Dolphin Emulator\GameSettings</code>, or <code>User\GameSettings</code> next to Dolphin.exe in a portable install.<br>macOS: <code>~/Library/Application Support/Dolphin/GameSettings</code>.<br>Linux: <code>~/.local/share/dolphin-emu/GameSettings</code>.<br>Flatpak: <code>~/.var/app/org.DolphinEmu.dolphin-emu/data/dolphin-emu/GameSettings</code>.</details></li>
+    </ol>
+    <div class="patcher" data-game="strikers" hidden>
+      <div class="top"><span>Ultra Patcher</span></div>
+      <div class="body">
+        <label class="slot" data-p="slot">
+          <span class="disc"></span>
+          <span><b data-p="disc-name">Your disc</b><span data-p="disc-hint">A dump of Super Mario Strikers (USA), G4QE01: ISO, GCM, CISO, GCZ or RVZ. Drop it here or click.</span></span>
+          <input type="file" accept=".iso,.gcm,.ciso,.gcz,.rvz" data-p="disc">
+        </label>
+        <label class="slot file" data-p="patch-step">
+          <span><b>The patch</b><span>The .patch file of this game.</span></span>
+          <input type="file" accept=".patch" data-p="patch">
+        </label>
+        <div class="lcd">
+          <div data-p="disc-info"></div>
+          <div data-p="patch-info"></div>
+          <div data-p="status"></div>
+        </div>
+        <progress data-p="bar" max="1" value="0" hidden></progress>
+        <div class="row">
+          <div class="seg">
+            <label><input type="radio" name="format-strikers" value="full" data-p="format" checked><span data-p="full">Full ISO</span></label>
+            <label><input type="radio" name="format-strikers" value="compact" data-p="format"><span data-p="compact">Trimmed ISO</span></label>
+          </div>
+          <button data-p="go" disabled>Make Ultra</button>
+          <a class="save" data-p="save" hidden>Save the ISO</a>
+        </div>
+      </div>
+      <div class="foot">Needs the untouched USA disc, G4QE01. <a href="#clean" data-p="clean">Is my dump clean?</a></div>
+    </div>
+    <dialog class="check" id="clean">
+     <div>
+      <h3>Is my dump clean?</h3>
+      <p>The patch needs the untouched USA disc, G4QE01. If the patcher says your dump differs, check it: Dolphin verifies a dump under Properties, Verify. A clean one has these hashes.</p>
+      <dl class="release">
+        <dt>MD5</dt><dd class="hash" data-fact="retail.md5"></dd>
+        <dt>SHA-1</dt><dd class="hash" data-fact="retail.sha1"></dd>
+        <dt>CRC32</dt><dd class="hash" data-fact="retail.crc32"></dd>
+      </dl>
+      <form method="dialog"><button>Close</button></form>
+     </div>
+    </dialog>
+  </section>
+
+  <section>
+    <h2>Changelog</h2>
+    <dl class="changes">
+      <div><dt>0.2 beta</dt><dd><ul>
+        <li>Fixed Crater Field hanging while it loads in Dolphin.</li>
+      </ul></dd></div>
+      <div><dt>0.1 beta</dt><dd>Initial release.</dd></div>
+    </dl>
+  </section>
+
+  <section class="credits">
+    <h2>Credits</h2>
+    <p class="made">A very fun reverse engineering project, mostly done by me. :) However, it couldn't exist without these awesome people. Thank you!!</p>
+    <ul>
+      <li><b>Decompilation</b> by yannicksuter and the smstrikers-decomp team. Every change was written against it.</li>
+      <li><b>Debug codes</b> by Ralf on gc-forever, which became the Debug page and led to the retro top-down camera.</li>
+      <li><b>Thanks</b> to Next Level Games, whose beta content is switched back on here, to RenolY2 for gc-c-kit and to cristian64 for MKDD Extender.</li>
+    </ul>
+  </section>
+  <footer>
+    <p>A fun passion project by <span class="by">AsmGecko</span> for my friend group. :)</p>
+    <p>A free fan project, not affiliated with, endorsed or sponsored by Nintendo. Mario Kart: Double Dash!!, Super Mario Strikers and their characters are trademarks of Nintendo. No game files are shared here: the patch only works with your own disc.</p>
+  </footer>
+</div>
+<script src="../ultra-menu.js"></script>
+<script src="menu.js"></script>
+<script src="../patcher-core.js"></script>
+<script src="../patcher.js"></script>
+<script src="../lightbox.js"></script>
+</body>
+</html>

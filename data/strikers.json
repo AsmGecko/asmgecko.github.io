@@ -1,0 +1,25 @@
+{
+ "game": "strikers",
+ "title": "Super Mario Strikers Ultra",
+ "version": "0.2 BETA",
+ "date": "2026-11-09",
+ "retail": {
+  "id": "G4QE01",
+  "size": 1459978240,
+  "crc32": "2ec051cf",
+  "md5": "8788cfdf60258c975fcb8632eb295f58",
+  "sha1": "c29918ab83fa01694fdaa444efdc4bf2dc89c4f8"
+ },
+ "release": {
+  "id": "G4QEJ8",
+  "size": 649003008,
+  "sha1": "d4f2346a2235b9e6ace0f008207dba1c75ccf3f1",
+  "name": "Super Mario Strikers Ultra v0.2 BETA [G4QEJ8].trim.iso"
+ },
+ "patch": {
+  "name": "Super Mario Strikers Ultra v0.2 BETA [G4QEJ8].patch",
+  "size": 1560678,
+  "sha256": "f9a9e081438d801185f6e34b808cee02c382131e334a0ad42a3956452194d758",
+  "url": "https://huggingface.co/qwenismyking/test/resolve/main/smsu0.2-beta.patch"
+ }
+}

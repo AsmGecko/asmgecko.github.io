@@ -1,0 +1,25 @@
+{
+ "game": "mkdd",
+ "title": "Mario Kart: Double Dash!! Ultra",
+ "version": "0.3 BETA",
+ "date": "2026-11-09",
+ "retail": {
+  "id": "GM4E01",
+  "size": 1459978240,
+  "crc32": "099e2c6d",
+  "md5": "97f9ebc39ab4244e419848793988561a",
+  "sha1": "34bdef709a1ae9799fdabe8e54cff1c7d3665f2b"
+ },
+ "release": {
+  "id": "GM4EJ8",
+  "size": 1121419264,
+  "sha1": "48403ca98414d8082c322cceb4fc3621f24854ab",
+  "name": "Mario Kart Double Dash Ultra v0.3 BETA [GM4EJ8].trim.iso"
+ },
+ "patch": {
+  "name": "Mario Kart Double Dash Ultra v0.3 BETA [GM4EJ8].patch",
+  "size": 479105659,
+  "sha256": "0947bf9fc90aa0a7beb860bc50c965bc7543048fea6624a43bc5615b6ffc6919",
+  "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu0.3-beta.patch"
+ }
+}

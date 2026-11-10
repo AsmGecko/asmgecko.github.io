@@ -28,11 +28,11 @@ const cpu = { name: "CPU", rows: [
 ] };
 const items = { name: "Items", rows: [
   { name: "Item boxes", text: "Every item box gives the item you pick, from bananas to Chain Chomps! Frantic gives a strong one at random, shells only gives green or red shells and no items turns the roulette off.", values: ["normal", "frantic", "shells only", "no items", "bananas", "green shells", "red shells", "blue shells", "mushrooms", "stars", "lightning", "bob-ombs", "golden mushrooms", "bowser shells", "chain chomps", "eggs", "hearts", "giant bananas", "fake item boxes"], about: "Every item box gives this item. Frantic gives only strong items." },
+  { name: "Box refill", text: "Item boxes come back right away, after four seconds or not at all. With never, every box counts! Also in battle.", values: ["normal", "instant", "slow", "never"], about: "How fast item boxes come back. Never means every box counts!" },
   { name: "Blue shells", text: "Off and the roulette never lands on a blue shell, also with frantic or shells only.", values: ["on", "off"], about: "Off means no blue shells from item boxes even with frantic or shells only." },
   { name: "Double items", text: "Every item box is a double box, so the driver and the rider in the back both get an item!", values: OFF_ON, about: "Every item box is a double box!" },
   { name: "Triple shells", text: "Anyone can roll three green or red shells as in Mario Kart Wii, not only Koopa and Paratroopa. On from the start.", values: ["on", "off"], about: "Anyone can get three green or red shells from an item box as in Mario Kart Wii. Not only Koopa and Paratroopa." },
   { name: "Specials for all", text: "Every character can roll every special item, from the fireballs to Bowser's shell. In the game only Petey and King Boo can.", values: OFF_ON, about: "Anyone can roll any special item!" },
-  { name: "Box refill", text: "Item boxes come back right away, after four seconds or not at all. With never, every box counts! Also in battle.", values: ["normal", "instant", "slow", "never"], about: "How fast item boxes come back. Never means every box counts!" },
 ] };
 const karts = { name: "Karts", rows: [
   { name: "Bumper cars", text: "Karts push each other two, four or eight times as hard when they bump! Light karts can push and heavy karts push the most. There's a limit, so nobody gets shot through a wall.", values: ["off", "x2", "x4", "x8"], about: "Karts push each other harder when they bump and heavy karts push the most." },

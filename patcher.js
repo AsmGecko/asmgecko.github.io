@@ -1,5 +1,5 @@
-// The patcher on the page of a game (the .patcher box, with data-game): pick your disc, and patcher-worker.js
-// downloads the patch of the site once the disc checks out and makes Ultra from it. Until then the page
+// The patcher on the page of a game (an empty .patcher box, with data-game, that this fills): pick your disc, and
+// patcher-worker.js downloads the patch of the site after checking the disc and makes Ultra from it. Until then the page
 // only reads the facts of the release, not the patch. Without one (the patches aren't public yet) it only shows with
 // ?patcher in the address, and asks for the patch file too. Elements with data-soon show while there's no patch,
 // those with data-ready once there is, and an element with data-fact shows that fact of data/<game>.json (the version,
@@ -10,6 +10,9 @@ const DISC_NAMES = {
   G4QE01: "Super Mario Strikers (USA)", G4QP01: "Mario Smash Football (Europe)", G4QJ01: "Mario Strikers (Japan)",
   G4QEJ8: "Super Mario Strikers Ultra",
 };
+
+// The retail disc each game's patch needs
+const RETAIL = { mkdd: "GM4E01", strikers: "G4QE01" };
 
 const OPFS_NAME = "ultra.iso";  // where the ISO waits in the site's storage until it's saved
 const OLD_OPFS_NAME = "ultra-edition.iso";  // what that was called, which a browser may still hold
@@ -39,6 +42,53 @@ async function patchUrl(game, root, facts = null) {
   return (await fetch(local, { method: "HEAD" }).then(r => r.ok).catch(() => false)) ? local : null;
 }
 
+// The box and its dialog, the same on every game's page
+function fill(box) {
+  const id = RETAIL[box.dataset.game];
+  const game = box.dataset.game;
+  box.innerHTML = `
+      <div class="top"><span>Ultra Patcher</span></div>
+      <div class="body">
+        <label class="slot" data-p="slot">
+          <span class="disc"></span>
+          <span><b data-p="disc-name">Your disc</b><span data-p="disc-hint">A dump of ${nameOf(id)}: ISO, GCM, CISO, GCZ or RVZ. Drop it here or click.</span></span>
+          <input type="file" accept=".iso,.gcm,.ciso,.gcz,.rvz" data-p="disc">
+        </label>
+        <label class="slot file" data-p="patch-step">
+          <span><b>The patch</b><span>The .patch file of this game.</span></span>
+          <input type="file" accept=".patch" data-p="patch">
+        </label>
+        <div class="lcd">
+          <div data-p="disc-info"></div>
+          <div data-p="patch-info"></div>
+          <div data-p="status"></div>
+        </div>
+        <progress data-p="bar" max="1" value="0" hidden></progress>
+        <div class="row">
+          <div class="seg">
+            <label><input type="radio" name="format-${game}" value="full" data-p="format" checked><span data-p="full">Full ISO</span></label>
+            <label><input type="radio" name="format-${game}" value="compact" data-p="format"><span data-p="compact">Trimmed ISO</span></label>
+          </div>
+          <button data-p="go" disabled>Make Ultra</button>
+          <a class="save" data-p="save" hidden>Save the ISO</a>
+        </div>
+      </div>
+      <div class="foot">Needs the untouched USA disc, ${id}. <a href="#clean" data-p="clean">Is my dump clean?</a></div>`;
+  box.insertAdjacentHTML("afterend", `
+    <dialog class="check" id="clean">
+     <div>
+      <h3>Is my dump clean?</h3>
+      <p>The patch needs the untouched USA disc, ${id}. If the patcher says your dump differs, check it: Dolphin verifies a dump under Properties, Verify. A clean one has these hashes.</p>
+      <dl class="release">
+        <dt>MD5</dt><dd class="hash" data-fact="retail.md5"></dd>
+        <dt>SHA-1</dt><dd class="hash" data-fact="retail.sha1"></dd>
+        <dt>CRC32</dt><dd class="hash" data-fact="retail.crc32"></dd>
+      </dl>
+      <form method="dialog"><button>Close</button></form>
+     </div>
+    </dialog>`);
+}
+
 function showReady(ready) {
   document.querySelectorAll("[data-soon]").forEach(el => { el.hidden = ready; });
   document.querySelectorAll("[data-ready]").forEach(el => { el.hidden = !ready; });
@@ -49,6 +99,7 @@ function showReady(ready) {
   if (!box) {
     return;
   }
+  fill(box);
   const facts = await factsOf(box.dataset.game, "../");
   document.querySelectorAll("[data-fact]").forEach(el => {
     const value = el.dataset.fact.split(".").reduce((o, key) => (o ? o[key] : null), facts);
@@ -142,10 +193,9 @@ function showReady(ready) {
   function showPatch() {
     const info = part("patch-info");
     if (!stored || stored.have >= stored.size) {
-      say(info, `patch ${label()} ready`);
+      say(info, `${label()}. Ready to patch!`);
     } else if (!downloader) {
-      say(info, `patch ${label()}, ${mb(stored.size)}${stored.have ? `, ${mb(stored.have)} of it here` : ""}: ` +
-                "it downloads once your disc checks out");
+      say(info, `${label()}, ${mb(stored.size)}. Ready to patch!`);
     }
   }
 
@@ -214,8 +264,7 @@ function showReady(ready) {
       }
       if (data.retry) {
         samples.length = 0;
-        return say(info, `the connection broke at ${mb(data.downloaded)} of ${mb(data.total)}, ` +
-                         `trying again in ${data.retry} s`, false, true);
+        return say(info, `connection lost at ${mb(data.downloaded)} of ${mb(data.total)}, retrying in ${data.retry} s`, false, true);
       }
       // The speed over the last ten seconds or so, from the start again when the patch does
       const now = Date.now();
@@ -277,7 +326,7 @@ function showReady(ready) {
         manifest = (await readManifest(file)).manifest;
         patch = file;
         showSizes();
-        say(part("patch-info"), `patch ${label()} ready, for ${nameOf(manifest.source.id)}`);
+        say(part("patch-info"), `${label()}, for ${nameOf(manifest.source.id)}. Ready to patch!`);
       } catch (error) {
         say(part("patch-info"), error instanceof PatchError ? error.message : `Can't read it: ${error.message}`, true);
       }
@@ -344,7 +393,7 @@ function showReady(ready) {
       }
       if (data.damaged) {
         // A stored patch that's damaged goes, and comes again
-        say(part("patch-info"), "The downloaded patch was damaged, so it downloads again.", true);
+        say(part("patch-info"), "The download was damaged. Downloading it again...", true);
         stored.have = 0;
         opfs.removeEntry(stored.name).catch(() => {}).then(() => stop(data.error));
         return;

@@ -673,7 +673,7 @@ footer b { color: var(--gold); }
 
   <section class="install" id="install">
     <h2>Ultra Patcher</h2>
-    <p class="intro" data-soon><strong>Coming soon.</strong> A free patch for your own disc, applied right here in your browser.</p>
+    <p class="intro" data-soon><strong>Coming soon.</strong> A free patch for your own disc, applied in your browser.</p>
     <p class="intro">Version <b data-fact="version">0.3 BETA</b>.</p>
     <ol class="steps">
       <li><b>Pick your dump</b> of Double Dash (USA): ISO, GCM, CISO, GCZ or RVZ.</li>
@@ -681,47 +681,7 @@ footer b { color: var(--gold); }
       <li><b>Optional:</b> for 16:9 in Dolphin from the very first screen, put <a href="GM4EJ8.ini" download>GM4EJ8.ini</a> in its GameSettings folder.
         <details class="where"><summary>Where's that?</summary>Windows: <code>Documents\Dolphin Emulator\GameSettings</code>, or <code>User\GameSettings</code> next to Dolphin.exe in a portable install.<br>macOS: <code>~/Library/Application Support/Dolphin/GameSettings</code>.<br>Linux: <code>~/.local/share/dolphin-emu/GameSettings</code>.<br>Flatpak: <code>~/.var/app/org.DolphinEmu.dolphin-emu/data/dolphin-emu/GameSettings</code>.</details></li>
     </ol>
-    <div class="patcher" data-game="mkdd" hidden>
-      <div class="top"><span>Ultra Patcher</span></div>
-      <div class="body">
-        <label class="slot" data-p="slot">
-          <span class="disc"></span>
-          <span><b data-p="disc-name">Your disc</b><span data-p="disc-hint">A dump of Double Dash (USA), GM4E01: ISO, GCM, CISO, GCZ or RVZ. Drop it here or click.</span></span>
-          <input type="file" accept=".iso,.gcm,.ciso,.gcz,.rvz" data-p="disc">
-        </label>
-        <label class="slot file" data-p="patch-step">
-          <span><b>The patch</b><span>The .patch file of this game.</span></span>
-          <input type="file" accept=".patch" data-p="patch">
-        </label>
-        <div class="lcd">
-          <div data-p="disc-info"></div>
-          <div data-p="patch-info"></div>
-          <div data-p="status"></div>
-        </div>
-        <progress data-p="bar" max="1" value="0" hidden></progress>
-        <div class="row">
-          <div class="seg">
-            <label><input type="radio" name="format-mkdd" value="full" data-p="format" checked><span data-p="full">Full ISO</span></label>
-            <label><input type="radio" name="format-mkdd" value="compact" data-p="format"><span data-p="compact">Trimmed ISO</span></label>
-          </div>
-          <button data-p="go" disabled>Make Ultra</button>
-          <a class="save" data-p="save" hidden>Save the ISO</a>
-        </div>
-      </div>
-      <div class="foot">Needs the untouched USA disc, GM4E01. <a href="#clean" data-p="clean">Is my dump clean?</a></div>
-    </div>
-    <dialog class="check" id="clean">
-     <div>
-      <h3>Is my dump clean?</h3>
-      <p>The patch needs the untouched USA disc, GM4E01. If the patcher says your dump differs, check it: Dolphin verifies a dump under Properties, Verify. A clean one has these hashes.</p>
-      <dl class="release">
-        <dt>MD5</dt><dd class="hash" data-fact="retail.md5"></dd>
-        <dt>SHA-1</dt><dd class="hash" data-fact="retail.sha1"></dd>
-        <dt>CRC32</dt><dd class="hash" data-fact="retail.crc32"></dd>
-      </dl>
-      <form method="dialog"><button>Close</button></form>
-     </div>
-    </dialog>
+    <div class="patcher" data-game="mkdd" hidden></div>
   </section>
 
   <section>

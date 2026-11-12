@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noimageindex, noarchive, nosnippet">
+<script src="../../gate.js"></script>
+<title>Ultra Patcher, Strikers Ultra</title>
+<style>
+/* The patcher of Super Mario Strikers Ultra: your disc and the patch make Ultra in the browser (patcher.js). The colors and fonts are the game page's. */
+/* The page of Strikers Ultra, like the one of Double Dash: the title, then the Ultra menu as the game's
+   options pages draw it, to try out (ultra-menu.js with menu.js), with what a row does beside it, then what's always
+   on, and the credits. The menu keeps the blue of the game in the light theme too. Offline on purpose: system fonts
+   only. */
+:root {
+  --bg: #0a1a30; --ink: #f2f6fc; --muted: #9fb2cc; --line: #23426a; --edge: #2f5d93;
+  --gold: #ffc21a; --grass-a: #2f8f3a; --grass-b: #3aa646;
+  --sk-shadow: 0 2px 0 #0b1f3a, 1px 0 0 #0b1f3a, -1px 0 0 #0b1f3a, 0 0 8px #0b1f3a99;
+  --sk-blue: radial-gradient(85% 75% at 50% 48%, #4f9fda, #2468a6 50%, #143f70);
+  --heavy: "Segoe UI Black", "Arial Black", "Helvetica Neue", sans-serif;
+  --body: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "Cascadia Mono", ui-monospace, Consolas, monospace;
+  --bad: #ff6b5e; --on-gold: #1a1300;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #eef3f9; --ink: #13233d; --muted: #52637d; --line: #cbd8e8; --edge: #9db5d3;
+    --gold: #a86f00;
+    --bad: #b0282e; --on-gold: #ffffff;
+    color-scheme: light;
+  }
+}
+:root[data-theme="dark"] { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.6 var(--body); }
+img { max-width: 100%; height: auto; }
+.page { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+.crumbs { padding: 14px 0 0; font-size: 14px; color: var(--muted); }
+.crumbs a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
+.crumbs a:hover { color: var(--ink); }
+.heavy { font-family: var(--heavy); font-weight: 900; font-style: italic; text-transform: uppercase; }
+h2 { font-family: var(--heavy); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: clamp(24px, 3.2vw, 34px); line-height: 1.1; margin: 0 0 6px; }
+.intro { color: var(--muted); margin: 0 0 18px; max-width: 72ch; }
+.intro strong { color: var(--ink); font-weight: 600; }
+section { padding: 56px 0 0; }
+.install p { color: var(--muted); max-width: 64ch; }
+.install strong { color: var(--ink); }
+.steps { margin: 0 0 22px; padding: 0; list-style: none; counter-reset: step; display: grid; gap: 10px; max-width: 64ch; }
+.steps li { counter-increment: step; position: relative; padding-left: 44px; color: var(--muted); min-height: 32px; }
+.steps li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: var(--on-gold); font-family: inherit; font-weight: 700; }
+.steps .where { margin-top: 4px; font-size: 14px; }
+.steps .where summary { cursor: pointer; color: var(--ink); }
+.steps .where code { font-family: var(--mono); font-size: 13px; overflow-wrap: anywhere; }
+.steps li b { color: var(--ink); font-weight: 700; font-family: inherit; }
+.check { max-width: min(64ch, calc(100vw - 32px)); border: 2px solid var(--edge); border-radius: 14px; padding: 0; color: var(--muted); font-size: 15px; background: var(--bg); color-scheme: inherit; }
+.check > div { padding: 18px 22px; }
+.check::backdrop { background: #0a1030cc; }
+.check h3 { margin: 0 0 8px; color: var(--ink); font-size: 20px; }
+.check p { margin: 10px 0; }
+.check form { margin: 14px 0 0; }
+.check form button { font: inherit; font-weight: 600; padding: 8px 18px; border-radius: 999px; border: 1px solid var(--edge); background: transparent; color: var(--ink); cursor: pointer; }
+.release { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 0 0 6px; }
+.release dt { color: var(--muted); }
+.release dd { margin: 0; }
+.release .hash { font-family: var(--mono); font-size: 12px; word-break: break-all; align-self: center; }
+.by { color: var(--gold); font-family: var(--heavy); font-weight: 900; font-style: italic; }
+.patcher { margin-top: 18px; max-width: 680px; border-radius: 18px; border: 2px solid var(--edge); background: linear-gradient(180deg, #121d4d, #0d1538); box-shadow: 0 24px 60px #0008, inset 0 1px 0 #ffffff22; overflow: hidden; color: #f1f4fc; }
+.patcher [hidden], .patcher[hidden] { display: none !important; }
+.patcher .top { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: linear-gradient(180deg, #ffe680, #ffb02a); color: #3a2400; font-family: var(--heavy); font-weight: 900; font-style: italic; letter-spacing: 0.08em; text-transform: uppercase; }
+.patcher .body { padding: 22px; display: grid; gap: 16px; }
+.slot { position: relative; display: grid; grid-template-columns: 96px 1fr; gap: 18px; align-items: center; padding: 18px; border-radius: 14px; border: 2px dashed #3c5aa8; background: #0a1030; cursor: pointer; }
+.slot:hover, .slot.drag, .slot:has(input:focus-visible) { border-color: #ffcf3a; }
+.slot.file { grid-template-columns: 1fr; padding: 12px 18px; }
+.slot input { position: absolute; opacity: 0; width: 0; height: 0; }
+.slot b { display: block; font-family: var(--heavy); font-weight: 900; font-style: italic; font-size: 20px; }
+.slot span span { color: #a9b4d2; font-size: 15px; }
+.disc { width: 96px; height: 96px; border-radius: 50%; position: relative; background: repeating-conic-gradient(#1a2660 0 15deg, #121c4c 15deg 30deg); box-shadow: 0 6px 18px #0009; }
+.disc::after { content: ""; position: absolute; inset: 36px; border-radius: 50%; background: #0a1030; box-shadow: 0 0 0 6px #3c5aa8 inset; }
+.loaded .disc { background: conic-gradient(from 0deg, #cbd5ff, #6b7bd6, #e8ecff, #5566c9, #cbd5ff); }
+.loaded .disc::after { box-shadow: 0 0 0 6px #a9b4d2 inset; }
+.lcd { border-radius: 10px; background: #061023; border: 1px solid #1b2a5c; box-shadow: inset 0 2px 12px #000a; padding: 12px 16px; font-family: var(--mono); font-size: 14px; color: #3fd27a; display: grid; gap: 4px; min-height: 42px; }
+.lcd div:empty { display: none; }
+.lcd div::before { content: "● "; }
+.lcd .wait { color: #6edcff; }
+.lcd .wait::before { content: "○ "; }
+.lcd .bad { color: #ff6b5e; }
+.patcher progress { width: 100%; height: 14px; appearance: none; border-radius: 999px; background: #061023; border: 1px solid #1b2a5c; overflow: hidden; }
+.patcher progress::-webkit-progress-bar { background: transparent; }
+.patcher progress::-webkit-progress-value { background: repeating-linear-gradient(90deg, #ffcf3a 0 10px, #ffe680 10px 20px); }
+.patcher progress::-moz-progress-bar { background: repeating-linear-gradient(90deg, #ffcf3a 0 10px, #ffe680 10px 20px); }
+.patcher .row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
+.seg { display: inline-flex; border: 1px solid #3c5aa8; border-radius: 999px; padding: 3px; background: #0a1030; }
+.seg label { position: relative; padding: 6px 14px; border-radius: 999px; font-size: 15px; color: #a9b4d2; cursor: pointer; }
+.seg input { position: absolute; opacity: 0; width: 0; height: 0; }
+.seg label:has(input:checked) { background: #3c5aa8; color: #f1f4fc; }
+.seg label:has(input:focus-visible) { outline: 2px solid #ffcf3a; }
+.patcher button, .patcher .save { font: inherit; font-family: var(--heavy); font-weight: 900; font-style: italic; font-size: 20px; letter-spacing: 0.04em; padding: 14px 30px; border-radius: 999px; border: 0; background: #ffcf3a; color: #1a1300; cursor: pointer; text-decoration: none; box-shadow: 0 6px 0 #b07600, 0 12px 24px #0008; }
+.patcher button:disabled { opacity: 0.4; cursor: default; box-shadow: none; }
+.patcher .foot { padding: 10px 22px 16px; font-size: 14px; color: #a9b4d2; border-top: 1px solid #1b2a5c; }
+.patcher .foot a { color: #ffcf3a; }
+footer { margin-top: 44px; padding: 20px 0 48px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+footer p { margin: 0 0 6px; }
+footer b { color: var(--gold); }
+.pages { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 0; border-bottom: 2px solid var(--line); }
+.pages a { font-family: var(--heavy); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: 16px; padding: 10px 20px; border: 2px solid var(--line); border-bottom: 0; border-radius: 12px 12px 0 0; color: var(--muted); text-decoration: none; margin-bottom: -2px; }
+.pages a:hover { color: var(--ink); }
+.pages a[aria-current] { color: var(--ink); border-color: var(--gold); background: var(--bg); box-shadow: 0 2px 0 var(--bg); }
+.pages a[hidden] { display: none; }
+.install { padding-top: 28px; }
+@media (max-width: 760px) {
+  body { font-size: 16px; }
+  section { padding-top: 44px; }
+  .slot { grid-template-columns: 64px 1fr; gap: 14px; padding: 14px; }
+  .disc { width: 64px; height: 64px; }
+  .disc::after { inset: 24px; }
+  .patcher .body { padding: 16px; }
+}
+</style>
+</head>
+<body>
+<div class="flag" aria-hidden="true"></div>
+<div class="page">
+  <nav class="crumbs"><a href="../../">Ultra</a> · <a href="../">Super Mario Strikers Ultra</a></nav>
+  <nav class="pages">
+    <a href="../">Super Mario Strikers Ultra</a>
+    <a href="./#patcher" aria-current="page">Ultra Patcher</a>
+  </nav>
+  <section class="install" data-panel="patcher">
+    <h2>Ultra Patcher</h2>
+    <p class="intro" data-soon><strong>Coming soon.</strong> A free patch for your own disc, applied in your browser.</p>
+    <p class="intro">Version <b data-fact="version">0.2 BETA</b>. Tested on real GameCube hardware and in Dolphin. A crash shows a screen you can send us a photo of.</p>
+    <ol class="steps">
+      <li><b>Pick your dump</b> of Super Mario Strikers (USA): ISO, GCM, CISO, GCZ or RVZ.</li>
+      <li><b>Make Ultra</b> and play it in Dolphin or on your GameCube.</li>
+      <li><b>Optional:</b> for 16:9 in Dolphin, put <a href="../G4QEJ8.ini" download>G4QEJ8.ini</a> in its GameSettings folder.
+        <details class="where"><summary>Where's that?</summary>Windows: <code>Documents\Dolphin Emulator\GameSettings</code>, or <code>User\GameSettings</code> next to Dolphin.exe in a portable install.<br>macOS: <code>~/Library/Application Support/Dolphin/GameSettings</code>.<br>Linux: <code>~/.local/share/dolphin-emu/GameSettings</code>.<br>Flatpak: <code>~/.var/app/org.DolphinEmu.dolphin-emu/data/dolphin-emu/GameSettings</code>.</details></li>
+    </ol>
+    <div class="patcher" data-game="strikers" hidden></div>
+  </section>
+  <footer>
+    <p>A fun passion project by <span class="by">AsmGecko</span> for my friend group. :)</p>
+    <p>A free fan project, not affiliated with, endorsed or sponsored by Nintendo. Mario Kart: Double Dash!!, Super Mario Strikers and their characters are trademarks of Nintendo. No game files are shared here: the patch only works with your own disc.</p>
+  </footer>
+</div>
+<script src="../../patcher-core.js"></script>
+<script src="../../patcher.js"></script>
+<script src="../../pages.js"></script>
+</body>
+</html>

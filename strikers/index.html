@@ -40,13 +40,11 @@ img { max-width: 100%; height: auto; }
 .crumbs { padding: 14px 0 0; font-size: 14px; color: var(--muted); }
 .crumbs a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
 .crumbs a:hover { color: var(--ink); }
-.pages { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 16px 0 0; font-family: var(--display); }
-.pages .tab { padding: 5px 16px; border-radius: 999px; border: 2px solid #2f83df; background: #0a1e5a; color: #8cf5fa; text-decoration: none; font-family: var(--heavy); font-weight: 900; font-style: italic; font-size: 15px; letter-spacing: 0.05em; text-transform: uppercase; -webkit-text-stroke: 3px #0a1030; paint-order: stroke fill; }
-.pages .tab:hover { border-color: #8cf5fa; }
-.pages .tab[aria-current] { border-color: #ffc828; background: #14306e; color: #ffcf3a; box-shadow: 0 0 0 2px #0a1030, 0 0 16px #ffc82855; }
-.pages .key { display: grid; place-items: center; width: 30px; height: 24px; border-radius: 8px 8px 12px 12px; background: linear-gradient(#f1f4fc, #aeb6cc); color: #14203f; font-size: 13px; text-decoration: none; box-shadow: 0 2px 0 #0a1030; }
-.pages .key:hover { background: #ffcf3a; }
-.pages .else { margin-left: auto; display: flex; gap: 16px; font: 14px var(--body); }
+.pages { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 14px 0 0; }
+.pages > a { font-size: 15px; padding: 6px 16px; border-radius: 999px; border: 2px solid var(--line); color: var(--muted); text-decoration: none; }
+.pages > a:hover { border-color: var(--gold); }
+.pages > a[aria-current] { border-color: var(--gold); color: var(--ink); }
+.pages .else { margin-left: auto; display: flex; gap: 16px; font-size: 14px; }
 .pages .else a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
 .pages .else a:hover { color: var(--ink); }
 .heavy { font-family: var(--heavy); font-weight: 900; font-style: italic; text-transform: uppercase; }
@@ -123,8 +121,6 @@ section { padding: 56px 0 0; }
 .changes dt { color: var(--ink); font-weight: 700; }
 .changes dd { margin: 0; }
 .changes dd ul { margin: 4px 0 0; padding-left: 20px; display: grid; gap: 4px; }
-.install p { color: var(--muted); max-width: 64ch; }
-.install strong { color: var(--ink); }
 .credits p { color: var(--muted); max-width: 75ch; }
 .by { color: var(--gold); font-family: var(--heavy); font-weight: 900; font-style: italic; }
 .credits .made { font-size: 1em; color: var(--ink); margin: 0 0 14px; }
@@ -175,10 +171,8 @@ footer b { color: var(--gold); }
 <div class="pitch" aria-hidden="true"></div>
 <div class="page">
   <nav class="pages">
-    <a class="key" data-by="-1" aria-label="Previous tab">L</a>
-    <a class="tab" href="./" aria-current="page">Strikers</a>
-    <a class="tab" href="patcher/#patcher">Ultra Patcher</a>
-    <a class="key" data-by="1" aria-label="Next tab">R</a>
+    <a href="./" aria-current="page">Super Mario Strikers Ultra</a>
+    <a href="patcher/#patcher">Ultra Patcher</a>
     <span class="else"><a href="../">Ultra</a><a href="../mkdd/">Double Dash Ultra</a></span>
   </nav>
 
@@ -248,15 +242,9 @@ footer b { color: var(--gold); }
     </div>
   </section>
 
-  <section class="install" id="install">
-    <h2>Ultra Patcher</h2>
-    <p class="intro" data-soon><strong>Coming soon.</strong> A free patch for your own disc, applied in your browser.</p>
-    <p class="intro">Version <b data-fact="version">0.2 BETA</b>. Tested on real GameCube hardware and in Dolphin. A crash shows a screen you can send us a photo of.</p>
-    <a class="cta" href="patcher/"><b>Ultra Patcher</b><span data-soon>see how it will work</span><span data-ready hidden>Patch your disc now!</span></a>
-  </section>
-
   <section>
     <h2>Changelog</h2>
+    <p class="intro">Version <b data-fact="version">0.2 BETA</b>. Tested on real GameCube hardware and in Dolphin. A crash shows a screen you can send us a photo of.</p>
     <dl class="changes">
       <div><dt>0.2 beta</dt><dd><ul>
         <li>Fixed Crater Field hanging while it loads in Dolphin.</li>
@@ -282,7 +270,7 @@ footer b { color: var(--gold); }
 <script src="../ultra-menu.js"></script>
 <script src="menu.js"></script>
 <script src="../patcher.js"></script>
-<script src="../pages.js"></script>
+<script src="../pages.js?2"></script>
 <script src="../lightbox.js"></script>
 </body>
 </html>

@@ -108,11 +108,15 @@ section { padding: 56px 0 0; }
 footer { margin-top: 44px; padding: 20px 0 48px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
 footer p { margin: 0 0 6px; }
 footer b { color: var(--gold); }
-.pages { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 0; border-bottom: 2px solid var(--line); }
-.pages a { font-family: var(--display); font-size: 18px; padding: 10px 20px; border: 2px solid var(--line); border-bottom: 0; border-radius: 12px 12px 0 0; color: var(--muted); text-decoration: none; margin-bottom: -2px; }
-.pages a:hover { color: var(--ink); }
-.pages a[aria-current] { color: var(--ink); border-color: var(--gold); background: var(--bg); box-shadow: 0 2px 0 var(--bg); }
-.pages a[hidden] { display: none; }
+.pages { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 16px 0 0; font-family: var(--display); }
+.pages .tab { padding: 5px 16px; border-radius: 999px; border: 2px solid #2f83df; background: #0a1e5a; color: #8cf5fa; text-decoration: none; font-size: 16px; letter-spacing: 0.05em; text-transform: uppercase; -webkit-text-stroke: 3px #0a1030; paint-order: stroke fill; }
+.pages .tab:hover { border-color: #8cf5fa; }
+.pages .tab[aria-current] { border-color: #ffc828; background: #14306e; color: #ffcf3a; box-shadow: 0 0 0 2px #0a1030, 0 0 16px #ffc82855; }
+.pages .key { display: grid; place-items: center; width: 30px; height: 24px; border-radius: 8px 8px 12px 12px; background: linear-gradient(#f1f4fc, #aeb6cc); color: #14203f; font-size: 13px; text-decoration: none; box-shadow: 0 2px 0 #0a1030; }
+.pages .key:hover { background: #ffcf3a; }
+.pages .else { margin-left: auto; display: flex; gap: 16px; font: 14px var(--body); }
+.pages .else a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
+.pages .else a:hover { color: var(--ink); }
 .install { padding-top: 28px; }
 @media (max-width: 760px) {
   body { font-size: 16px; }
@@ -127,11 +131,13 @@ footer b { color: var(--gold); }
 <body>
 <div class="flag" aria-hidden="true"></div>
 <div class="page">
-  <nav class="crumbs"><a href="../../">Ultra</a> · <a href="../">Double Dash Ultra</a></nav>
   <nav class="pages">
-    <a href="../">Double Dash Ultra</a>
-    <a href="./#patcher" aria-current="page">Ultra Patcher</a>
-    <a href="./#courses" data-courses hidden>Your own courses</a>
+    <a class="key" data-by="-1" aria-label="Previous tab">L</a>
+    <a class="tab" href="../">Double Dash</a>
+    <a class="tab" href="../patcher/#patcher" aria-current="page">Ultra Patcher</a>
+    <a class="tab" href="../patcher/#courses">Your own courses</a>
+    <a class="key" data-by="1" aria-label="Next tab">R</a>
+    <span class="else"><a href="../../">Ultra</a><a href="../../strikers/">Super Mario Strikers Ultra</a></span>
   </nav>
   <section class="install" data-panel="patcher">
     <h2>Ultra Patcher</h2>

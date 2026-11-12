@@ -40,11 +40,15 @@ img { max-width: 100%; height: auto; }
 .crumbs { padding: 14px 0 0; font-size: 14px; color: var(--muted); }
 .crumbs a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
 .crumbs a:hover { color: var(--ink); }
-.pages { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 0; border-bottom: 2px solid var(--line); }
-.pages a { font-family: var(--display); font-size: 18px; padding: 10px 20px; border: 2px solid var(--line); border-bottom: 0; border-radius: 12px 12px 0 0; color: var(--muted); text-decoration: none; margin-bottom: -2px; }
-.pages a:hover { color: var(--ink); }
-.pages a[aria-current] { color: var(--ink); border-color: var(--gold); background: var(--bg); box-shadow: 0 2px 0 var(--bg); }
-.pages a[hidden] { display: none; }
+.pages { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 16px 0 0; font-family: var(--display); }
+.pages .tab { padding: 5px 16px; border-radius: 999px; border: 2px solid #2f83df; background: #0a1e5a; color: #8cf5fa; text-decoration: none; font-size: 16px; letter-spacing: 0.05em; text-transform: uppercase; -webkit-text-stroke: 3px #0a1030; paint-order: stroke fill; }
+.pages .tab:hover { border-color: #8cf5fa; }
+.pages .tab[aria-current] { border-color: #ffc828; background: #14306e; color: #ffcf3a; box-shadow: 0 0 0 2px #0a1030, 0 0 16px #ffc82855; }
+.pages .key { display: grid; place-items: center; width: 30px; height: 24px; border-radius: 8px 8px 12px 12px; background: linear-gradient(#f1f4fc, #aeb6cc); color: #14203f; font-size: 13px; text-decoration: none; box-shadow: 0 2px 0 #0a1030; }
+.pages .key:hover { background: #ffcf3a; }
+.pages .else { margin-left: auto; display: flex; gap: 16px; font: 14px var(--body); }
+.pages .else a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
+.pages .else a:hover { color: var(--ink); }
 h2 { font-family: var(--display); font-size: clamp(26px, 3.4vw, 36px); line-height: 1.1; margin: 0 0 6px; text-wrap: balance; }
 .intro { color: var(--muted); margin: 0 0 18px; max-width: 72ch; }
 .intro strong { color: var(--ink); font-weight: 600; }
@@ -73,14 +77,14 @@ section { padding: 56px 0 0; }
    row in a pill, gold round the chosen one */
 .stage { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 24px; align-items: start; outline: none; }
 .stage:focus-visible .mk { box-shadow: 0 0 0 3px #0a1030, 0 0 0 6px var(--gold); }
-.mk { --pad: 18px; color: #f1f4fc; background: #002450; border: 2px solid #0a1030; border-radius: 12px; box-shadow: 0 20px 60px #0007; padding: 0 var(--pad); overflow: hidden; font-family: var(--display); text-transform: uppercase; letter-spacing: 0.06em; text-shadow: var(--outline); animation: mk-stars 11s linear infinite; }
+.mk { --pad: 18px; color: #f1f4fc; background: #002450 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cpath fill='%230b3878' d='M18 5l3.8 8.2 9 1-6.7 6.1 1.9 8.8L18 24.6 10 29.1l1.9-8.8-6.7-6.1 9-1zM54 41l3.8 8.2 9 1-6.7 6.1 1.9 8.8-8-4.5-8 4.5 1.9-8.8-6.7-6.1 9-1z'/%3E%3C/svg%3E") 0 0 / 72px 72px; border: 2px solid #f1f4fc; border-radius: 12px; box-shadow: 0 20px 60px #0007; padding: 0 var(--pad); overflow: hidden; font-family: var(--display); text-transform: uppercase; letter-spacing: 0.06em; -webkit-text-stroke: 3px #0a1030; paint-order: stroke fill; animation: mk-stars 11s linear infinite; }
 @keyframes mk-stars { to { background-position: -72px -36px; } }
 @media (prefers-reduced-motion: reduce) { .mk { animation: none; } }
 .mk button { font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit; text-shadow: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 .mk-top { position: relative; display: flex; justify-content: center; margin: 0 calc(-1 * var(--pad)); padding: 8px 0; background: repeating-conic-gradient(#373ceb 0 25%, #5faae4 0 50%) 0 0 / 16px 16px; border-bottom: 1px solid #ffffff5a; }
-.mk-title { display: block; font: 800 34px/40px var(--display); letter-spacing: 0.04em; color: #ffcf3a; text-shadow: 0 2px 0 #7a3800, 0 0 2px #7a3800; }
+.mk-title { display: block; font: 800 36px/42px var(--display); letter-spacing: 0.06em; color: #ffcf3a; -webkit-text-stroke: 6px #7a3800; text-shadow: 0 3px 0 #3a1a00; }
 .mk-page { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 1px; font-size: 13px; }
-.mk-trigger { display: grid; place-items: center; width: 26px; height: 22px; border-radius: 6px; background: #d8dce8; color: #14203f; font: 12px var(--display); text-shadow: none; }
+.mk-trigger { display: grid; place-items: center; width: 26px; height: 22px; border-radius: 6px; background: linear-gradient(#f1f4fc, #aeb6cc); color: #14203f; font: 12px var(--display); -webkit-text-stroke: 0; }
 .mk-page span { margin-left: 4px; }
 .menu-head { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 8px 28px; align-items: start; margin-bottom: 18px; }
 .menu-head .intro { margin: 0; }
@@ -94,12 +98,13 @@ section { padding: 56px 0 0; }
 .um-tab { position: relative; font-size: 15px; color: #7896c8 !important; white-space: nowrap; padding: 4px 9px !important; border-radius: 6px; }
 .um-tab[aria-selected=true] { font-size: 20px; color: #ffcf3a !important; }
 .um-tab[aria-selected=true]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 4px; border-radius: 2px; background: #ffc828; }
-.mk-mode { margin: 0 0 10px; padding: 4px 10px 8px 12px; border: 2px solid #2f83df90; border-radius: 14px; background: #0a0a3c66; }
+.mk-mode { margin: 0 0 10px; padding: 4px 10px 8px 12px; border: 2px solid #2f83df; border-radius: 14px; background: linear-gradient(#0a2a6ecc, #00183ecc); }
 .mk-mode.um-on { border-color: #ffc828; }
 .mk .mk-mode .um-row { margin: 0; padding: 0; border: 0; background: none; font-size: 1.2em; }
 .um-fixed-about { margin: 6px 0 0; font-size: 13px; line-height: 1.45; min-height: 2.9em; }
-.mk .um-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; min-height: 30px; margin: 0 0 6px; padding: 1px 8px 1px 12px; border: 2px solid #2f83df90; border-radius: 999px; background: #0a0a3c66; cursor: pointer; }
-.mk .um-row.um-on { border-color: #ffc828; }
+.mk .um-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; min-height: 30px; margin: 0 0 6px; padding: 1px 8px 1px 12px; border: 2px solid #2f83df; border-radius: 999px; background: linear-gradient(#0a2a6ecc, #00183ecc); cursor: pointer; }
+.mk .um-row.um-on { border-color: #ffc828; background: linear-gradient(#14408ccc, #0a2460cc); box-shadow: 0 0 0 2px #0a1030, 0 0 14px #ffc82855; }
+.mk .mk-mode .um-row.um-on { background: none; box-shadow: none; }
 .mk .um-name { color: #8cf5fa; }
 .mk .um-on .um-name { color: #ffcf3a; font-size: 1.1em; }
 .um-value { display: flex; align-items: center; gap: 4px; }
@@ -107,8 +112,8 @@ section { padding: 56px 0 0; }
 .um-pill.um-set, .um-pill.v-on { color: #8cf5fa; }
 .um-pill.v-off { color: #7896c8; }
 .mk .um-on .um-pill { color: #ffcf3a; font-size: 1.1em; }
-.mk .um-pill[style] { color: transparent; background: linear-gradient(var(--top), var(--bottom)); -webkit-background-clip: text; background-clip: text; text-shadow: none; filter: drop-shadow(1px 1px 0 #0a1030) drop-shadow(-1px -1px 0 #0a1030) drop-shadow(0 1px 0 #0a1030); }
-.mk .um-arrow { width: 26px; color: #14306e; -webkit-text-stroke: 1px #5a9650; text-shadow: none; font-size: 12px; padding: 4px 0; }
+.mk .um-pill[style] { color: transparent; background: linear-gradient(var(--top), var(--bottom)); -webkit-background-clip: text; background-clip: text; -webkit-text-stroke: 0; filter: drop-shadow(1px 1px 0 #0a1030) drop-shadow(-1px -1px 0 #0a1030) drop-shadow(0 1px 0 #0a1030); }
+.mk .um-arrow { width: 26px; color: #14306e; -webkit-text-stroke: 1px #5a9650; paint-order: normal; font-size: 12px; padding: 4px 0; }
 .mk .um-on .um-arrow:not(.um-end) { color: #bef53c; -webkit-text-stroke: 1px #001c46; font-size: 16px; }
 .mk-about { margin: 14px calc(-1 * var(--pad)) 0; padding: 8px var(--pad); background: #000e28c8; font-size: 13px; line-height: 1.45; min-height: 3.4em; }
 .mk-summary { margin: 10px 4px 0; font-family: var(--display); font-size: 14px; color: var(--gold); }
@@ -117,10 +122,10 @@ section { padding: 56px 0 0; }
 /* What a row does: beside the menu, or under the chosen row on a phone */
 .panel { position: sticky; top: 16px; }
 .um-detail img { display: block; width: 100%; border-radius: 10px; border: 2px solid var(--edge); }
-.um-card { aspect-ratio: 4 / 3; border-radius: 10px; border: 2px solid #3c5aa8; display: grid; place-items: center; align-content: center; gap: 10px; color: #f1f4fc; background: repeating-conic-gradient(#121c58 0 25%, #0f174a 0 50%) 0 0 / 40px 40px; font-family: var(--display); text-transform: uppercase; letter-spacing: 0.06em; text-shadow: var(--outline); }
+.um-card { aspect-ratio: 16 / 9; border-radius: 10px; border: 2px solid #2f83df; display: grid; place-items: center; align-content: center; gap: 10px; color: #ffcf3a; background: #002450 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cpath fill='%230b3878' d='M18 5l3.8 8.2 9 1-6.7 6.1 1.9 8.8L18 24.6 10 29.1l1.9-8.8-6.7-6.1 9-1zM54 41l3.8 8.2 9 1-6.7 6.1 1.9 8.8-8-4.5-8 4.5 1.9-8.8-6.7-6.1 9-1z'/%3E%3C/svg%3E") 0 0 / 72px 72px; font: 26px var(--display); text-transform: uppercase; letter-spacing: 0.06em; -webkit-text-stroke: 5px #0a1030; paint-order: stroke fill; text-align: center; padding: 0 16px; }
 .um-card img { width: 112px; height: 112px; object-fit: contain; border: 0; }
 .panel h3 { font-family: var(--display); font-size: 22px; line-height: 1.2; margin: 14px 0 4px; }
-.um-text { margin: 0 0 10px; font: 400 16px/1.55 var(--body); text-transform: none; letter-spacing: 0; text-shadow: none; }
+.um-text { margin: 0 0 10px; font: 400 16px/1.55 var(--body); text-transform: none; letter-spacing: 0; -webkit-text-stroke: 0; }
 .um-values { margin: 0; color: var(--muted); font-size: 14px; }
 
 /* The moves and the game modes: screenshots, with the ones without a screenshot in a list */
@@ -220,11 +225,13 @@ footer b { color: var(--gold); }
 <body data-game="mkdd">
 <div class="flag" aria-hidden="true"></div>
 <div class="page">
-  <nav class="crumbs"><a href="../">Ultra</a> · <a href="../strikers/">Super Mario Strikers Ultra</a></nav>
   <nav class="pages">
-    <a href="./" aria-current="page">Double Dash Ultra</a>
-    <a href="patcher/#patcher">Ultra Patcher</a>
-    <a href="patcher/#courses" data-courses hidden>Your own courses</a>
+    <a class="key" data-by="-1" aria-label="Previous tab">L</a>
+    <a class="tab" href="./" aria-current="page">Double Dash</a>
+    <a class="tab" href="patcher/#patcher">Ultra Patcher</a>
+    <a class="tab" href="patcher/#courses">Your own courses</a>
+    <a class="key" data-by="1" aria-label="Next tab">R</a>
+    <span class="else"><a href="../">Ultra</a><a href="../strikers/">Super Mario Strikers Ultra</a></span>
   </nav>
 
   <header class="hero">
@@ -345,7 +352,7 @@ footer b { color: var(--gold); }
     <div class="menu-head two">
     <div>
     <h2>Custom tracks</h2>
-    <p class="intro">80 custom tracks and 30 battle stages on five extra pages of the cup and stage select, Retro 1 to 5. The first four have the full MKDD Plus lineup and the fifth has our own picks from the community. Every course has its own music in stereo, all on one disc! Turn the page with <strong>L</strong> and <strong>R</strong>, or just keep going past the last cup. L+R together rolls a random cup. In Versus and Time Trials, <strong>X</strong> switches to a list of the courses by console, or of all of them from A to Z. The stage select has the same list for the battle stages.</p>
+    <p class="intro">80 custom tracks and 30 battle stages on five extra pages of the cup and stage select, Retro 1 to 5. The first four have the full MKDD Plus lineup and the fifth has our own picks from the community. Every course has its own music in stereo, all on one disc! Turn the page with <strong>L</strong> and <strong>R</strong>, or just keep going past the last cup. L+R together rolls a random cup. In Versus and Time Trials, <strong>X</strong> switches to a list of the courses by console, or of all of them from A to Z. The stage select has the same list for the battle stages. Want more? Add <a href="patcher/#courses">your own courses</a> to your ISO!</p>
     </div>
     <figure class="real"><a href="img/cup-select.jpg"><img src="img/cup-select.jpg" width="960" height="708" alt="The cup select on the first extra page, X List and Z Ultra in the title bar, Retro 1 in the gold label under the title: Mushroom Cup with SNES Mario Circuit 1, N64 Kalimari Desert, DS Cheep-Cheep Beach and GBA Bowser Castle 1, and on the preview how long and how hard" loading="lazy"></a><figcaption>Retro 1 on the cup select</figcaption></figure>
     <figure class="real"><a href="img/track-list.jpg"><img src="img/track-list.jpg" width="960" height="708" alt="The list of courses: a tab per console and one for all courses under the title bar, Nintendo 64 above seven rows of its courses with Kalimari Desert picked, its preview beside them and under that where it is, how long and how hard" loading="lazy"></a><figcaption>The same courses by console, on X</figcaption></figure>
@@ -636,6 +643,7 @@ footer b { color: var(--gold); }
     <h2>Changelog</h2>
     <dl class="changes">
       <div><dt>0.3 beta</dt><dd><ul>
+        <li>Your own courses! Put course ZIPs on your ISO with the <a href="patcher/#courses">Ultra Patcher</a> and race them from the OWN tab.</li>
         <li>Fixed a crash at the award ceremony after every Grand Prix.</li>
         <li>Fixed a crash in battle when an item rule hands out a chain chomp.</li>
         <li>Fixed a rare crash in bob-omb tag.</li>

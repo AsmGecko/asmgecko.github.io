@@ -40,11 +40,15 @@ img { max-width: 100%; height: auto; }
 .crumbs { padding: 14px 0 0; font-size: 14px; color: var(--muted); }
 .crumbs a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
 .crumbs a:hover { color: var(--ink); }
-.pages { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 0; border-bottom: 2px solid var(--line); }
-.pages a { font-family: var(--heavy); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: 16px; padding: 10px 20px; border: 2px solid var(--line); border-bottom: 0; border-radius: 12px 12px 0 0; color: var(--muted); text-decoration: none; margin-bottom: -2px; }
-.pages a:hover { color: var(--ink); }
-.pages a[aria-current] { color: var(--ink); border-color: var(--gold); background: var(--bg); box-shadow: 0 2px 0 var(--bg); }
-.pages a[hidden] { display: none; }
+.pages { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 16px 0 0; font-family: var(--display); }
+.pages .tab { padding: 5px 16px; border-radius: 999px; border: 2px solid #2f83df; background: #0a1e5a; color: #8cf5fa; text-decoration: none; font-family: var(--heavy); font-weight: 900; font-style: italic; font-size: 15px; letter-spacing: 0.05em; text-transform: uppercase; -webkit-text-stroke: 3px #0a1030; paint-order: stroke fill; }
+.pages .tab:hover { border-color: #8cf5fa; }
+.pages .tab[aria-current] { border-color: #ffc828; background: #14306e; color: #ffcf3a; box-shadow: 0 0 0 2px #0a1030, 0 0 16px #ffc82855; }
+.pages .key { display: grid; place-items: center; width: 30px; height: 24px; border-radius: 8px 8px 12px 12px; background: linear-gradient(#f1f4fc, #aeb6cc); color: #14203f; font-size: 13px; text-decoration: none; box-shadow: 0 2px 0 #0a1030; }
+.pages .key:hover { background: #ffcf3a; }
+.pages .else { margin-left: auto; display: flex; gap: 16px; font: 14px var(--body); }
+.pages .else a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
+.pages .else a:hover { color: var(--ink); }
 .heavy { font-family: var(--heavy); font-weight: 900; font-style: italic; text-transform: uppercase; }
 h2 { font-family: var(--heavy); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: clamp(24px, 3.2vw, 34px); line-height: 1.1; margin: 0 0 6px; }
 .intro { color: var(--muted); margin: 0 0 18px; max-width: 72ch; }
@@ -170,10 +174,12 @@ footer b { color: var(--gold); }
 <body data-game="strikers">
 <div class="pitch" aria-hidden="true"></div>
 <div class="page">
-  <nav class="crumbs"><a href="../">Ultra</a> · <a href="../mkdd/">Double Dash Ultra</a></nav>
   <nav class="pages">
-    <a href="./" aria-current="page">Super Mario Strikers Ultra</a>
-    <a href="patcher/#patcher">Ultra Patcher</a>
+    <a class="key" data-by="-1" aria-label="Previous tab">L</a>
+    <a class="tab" href="./" aria-current="page">Strikers</a>
+    <a class="tab" href="patcher/#patcher">Ultra Patcher</a>
+    <a class="key" data-by="1" aria-label="Next tab">R</a>
+    <span class="else"><a href="../">Ultra</a><a href="../mkdd/">Double Dash Ultra</a></span>
   </nav>
 
   <header class="hero">

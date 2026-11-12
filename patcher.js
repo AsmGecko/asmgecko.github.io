@@ -58,9 +58,15 @@ function fill(box) {
           <span><b>The patch</b><span>The .patch file of this game.</span></span>
           <input type="file" accept=".patch" data-p="patch">
         </label>
+        <label class="slot file" data-p="courses-step"${game === "mkdd" ? "" : " hidden"}>
+          <span><b>Your own courses</b><span>Optional. Course ZIPs to add to the disc. Drop them here or click.</span></span>
+          <input type="file" accept=".zip" multiple data-p="courses">
+        </label>
+        <ul class="own" data-p="course-list"></ul>
         <div class="lcd">
           <div data-p="disc-info"></div>
           <div data-p="patch-info"></div>
+          <div data-p="courses-info"></div>
           <div data-p="status"></div>
         </div>
         <progress data-p="bar" max="1" value="0" hidden></progress>
@@ -146,6 +152,7 @@ function showReady(ready) {
   clean.onclick = e => { if (e.target === clean) { clean.close(); } };  // a click on the backdrop closes it
   part("patch-step").hidden = Boolean(url);
   let disc = null, patch = null, manifest = null, running = false;
+  let courses = [];  // to add to the disc, by their file's name: {name, blob, title, author}
   // The two sizes of the ISO, once the patch is known
   const showSizes = () => {
     part("full").textContent = `Full ISO, ${gb(isoSize(manifest, true))}`;
@@ -297,8 +304,51 @@ function showReady(ready) {
     if (right && !ready()) {
       download();
     }
-    part("go").disabled = running || !right || !ready();
+    const room = manifest ? DISC_SIZE - manifest.target.size - pakSize(courses) : 0;
+    if (courses.length && room < 0) {
+      say(part("courses-info"), `These courses are ${mb(-room)} too big for the disc.`, true);
+    }
+    part("go").disabled = running || !right || !ready() || room < 0;
   }
+
+  const showCourses = () => {
+    part("course-list").replaceChildren(...courses.map(course => {
+      const row = document.createElement("li");
+      const title = document.createElement("b");
+      const about = document.createElement("span");
+      const remove = document.createElement("button");
+      title.textContent = course.title;
+      about.textContent = `${course.author ? `by ${course.author}, ` : ""}${mb(course.blob.size)}`;
+      remove.textContent = "×";
+      remove.setAttribute("aria-label", `Remove ${course.title}`);
+      remove.disabled = running;
+      remove.onclick = () => {
+        courses = courses.filter(other => other !== course);
+        showCourses();
+      };
+      row.append(title, about, remove);
+      return row;
+    }));
+    say(part("courses-info"), courses.length ? `${courses.length} of your own courses, ${mb(pakSize(courses))}.` : "");
+    check();
+  };
+  part("courses").onchange = async e => {
+    let wrong = "";
+    for (const blob of e.target.files) {
+      try {
+        const info = await courseInfo(blob);
+        courses = courses.filter(course => course.name !== blob.name);
+        courses.push({ name: blob.name, blob, title: info.name, author: info.author });
+      } catch (error) {
+        wrong = error instanceof PatchError ? error.message : `${blob.name} can't be read.`;
+      }
+    }
+    e.target.value = "";
+    showCourses();
+    if (wrong) {
+      say(part("courses-info"), wrong, true);
+    }
+  };
 
   part("disc").onchange = async e => {
     disc = null;
@@ -361,7 +411,8 @@ function showReady(ready) {
         return check();
       }
     }
-    part("disc").disabled = part("patch").disabled = true;
+    part("disc").disabled = part("patch").disabled = part("courses").disabled = true;
+    showCourses();
     box.querySelectorAll("[data-p=format]").forEach(el => { el.disabled = true; });
     part("save").hidden = true;
     const bar = part("bar");
@@ -372,7 +423,8 @@ function showReady(ready) {
     const stop = error => {
       worker.terminate();
       running = false;
-      part("disc").disabled = part("patch").disabled = false;
+      part("disc").disabled = part("patch").disabled = part("courses").disabled = false;
+      showCourses();
       box.querySelectorAll("[data-p=format]").forEach(el => { el.disabled = false; });
       if (error) {
         bar.hidden = true;
@@ -414,6 +466,6 @@ function showReady(ready) {
       }
     };
     worker.postMessage({ disc: disc.file, patch: stored ? { stored: stored.name } : patch, full, out,
-                         code: ultraCode() });
+                         code: ultraCode(), courses: courses.map(({ name, blob }) => ({ name, blob })) });
   };
 })();

@@ -4,7 +4,7 @@
 // storage), whether it's a full disc and where to write it, and says how far it is, the end or what went wrong. It
 // writes to the file the person picked when the browser can, otherwise to a file in OPFS, and only as a last resort
 // into memory.
-importScripts("vendor/fzstd.js", "patcher-key.js", "patcher-core.js");
+importScripts("vendor/fzstd.js", "patcher-key.js", "patcher-core.js", "course-pak.js");
 
 const PART = 8 << 20;     // bytes of the patch per request
 const SHOW_EVERY = 250;   // ms between two messages of how far a download is
@@ -211,7 +211,7 @@ async function make(job) {
       data = file.slice(read.start).stream();
     }
     ({ manifest, data } = await unseal(source, manifest, data, job.code));
-    sink = await sinkFor(job.out);
+    sink = courseSink(await sinkFor(job.out), job.courses || [], job.full);
     let shown = 0;
     const total = isoSize(manifest, job.full);
     await makeIso(source, manifest, data, sink, written => {

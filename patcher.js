@@ -11,9 +11,6 @@ const DISC_NAMES = {
   G4QEJ8: "Super Mario Strikers Ultra",
 };
 
-// The site's root, from where this file is, as the page may be a folder deeper
-const ROOT = new URL("./", document.currentScript.src).href;
-
 // The retail disc each game's patch needs
 const RETAIL = { mkdd: "GM4E01", strikers: "G4QE01" };
 
@@ -98,22 +95,21 @@ function showReady(ready) {
 }
 
 (async () => {
-  // A game's page without the box still shows its facts and whether there's a patch
-  const box = document.querySelector(".patcher[data-game]");
-  const game = box ? box.dataset.game : document.body.dataset.game;
-  if (box) {
-    fill(box);
+  const box = document.querySelector(".patcher");
+  if (!box) {
+    return;
   }
-  const facts = await factsOf(game, ROOT);
+  fill(box);
+  const facts = await factsOf(box.dataset.game, "../");
   document.querySelectorAll("[data-fact]").forEach(el => {
     const value = el.dataset.fact.split(".").reduce((o, key) => (o ? o[key] : null), facts);
     if (value != null) {
       el.textContent = value;
     }
   });
-  const url = await patchUrl(game, ROOT, facts);
+  const url = await patchUrl(box.dataset.game, "../", facts);
   showReady(Boolean(url));
-  if (!box || (!url && !new URLSearchParams(location.search).has("patcher"))) {
+  if (!url && !new URLSearchParams(location.search).has("patcher")) {
     return;
   }
   box.hidden = false;
@@ -228,7 +224,7 @@ function showReady(ready) {
                 "reload the page.", true);
       return;
     }
-    downloader = new Worker(`${ROOT}patcher-worker.js`);
+    downloader = new Worker("../patcher-worker.js");
     const samples = [];
     bar.hidden = false;
     const done = () => {
@@ -372,7 +368,7 @@ function showReady(ready) {
     bar.hidden = false;
     bar.value = 0;
     say(part("status"), "starting...", false, true);
-    const worker = new Worker(`${ROOT}patcher-worker.js`);
+    const worker = new Worker("../patcher-worker.js");
     const stop = error => {
       worker.terminate();
       running = false;

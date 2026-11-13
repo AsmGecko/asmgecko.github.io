@@ -51,11 +51,11 @@ async function zipEntries(blob, wrong) {
     at -= 1;
   }
   if (at < 0) {
-    throw wrong(tail < 22 || blob.size <= ZIP_TAIL ? "is not a ZIP" : "has a comment the game can't read past");
+    throw wrong(tail < 22 || blob.size <= ZIP_TAIL ? "is not a ZIP" : "has a long comment in it. Zip it again without one");
   }
   const length = end.getUint32(at + 12, true);
   if (length > ZIP_DIRECTORY) {
-    throw wrong("has more files than the game can list");
+    throw wrong("has too many files in it");
   }
   const offset = end.getUint32(at + 16, true);
   if (offset > blob.size || length > blob.size - offset) {
@@ -89,7 +89,7 @@ function zipEntry(entries, pack, wanted) {
         (pack.folder === null || entry.name.startsWith(pack.folder))) {
       pack.folder = entry.name.slice(0, before);
       pack.why = entry.locked ? "is locked with a password"
-        : entry.method !== 0 && entry.method !== 8 ? "is packed in a way the game can't read" : "";
+        : entry.method !== 0 && entry.method !== 8 ? "is zipped in a way the game can't open" : "";
       return pack.why ? null : entry;
     }
   }
@@ -193,7 +193,7 @@ async function courseInfo(blob) {
   }
   const track = zipEntry(entries, pack, "track.arc");
   if (!track) {
-    throw wrong(pack.why || "has no track.arc beside its trackinfo.ini");
+    throw wrong(pack.why || "is missing its track file");
   }
   const split = zipEntry(entries, pack, "track_mp.arc");
   if (track.size > ARCHIVE_MOST || (split && split.size > ARCHIVE_MOST)) {
@@ -222,7 +222,7 @@ async function courseInfo(blob) {
   const start = await zipStart(blob, track, PACKAGE_SNIFF);
   const slot = start ? sniffedSlot(start) : -1;
   if (slot < 0) {
-    throw new PatchError(`${name} isn't made for one of the game's courses.`);
+    throw new PatchError(`${name} doesn't replace a course of the game, so there's no place for it.`);
   }
 
   const info = { name, author: raw("author").trim(), label: shown, slot, plays: COURSES[slot][1],
@@ -286,7 +286,7 @@ function findPak(disc) {
       child = disc.getUint8(table + child * 12) ? disc.getUint32(table + child * 12 + 8) : child + 1;
     }
     if (child >= end) {
-      throw new PatchError("This version of Ultra can't take courses yet.");
+      throw new PatchError("This version of Ultra can't take your own courses yet.");
     }
     entry = child;
   }

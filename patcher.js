@@ -59,7 +59,7 @@ function fill(box) {
           <input type="file" accept=".patch" data-p="patch">
         </label>
         <label class="slot file" data-p="courses-step"${game === "mkdd" ? "" : " hidden"}>
-          <span><b>Your own courses</b><span>Optional. Course ZIPs to add to the disc. Drop them here or click.</span></span>
+          <span><b>Your own courses</b><span>Optional: course ZIPs to put on the disc. Drop them here or click.</span></span>
           <input type="file" accept=".zip" multiple data-p="courses">
         </label>
         <ul class="own" data-p="course-list"></ul>
@@ -316,8 +316,8 @@ function showReady(ready) {
     const has = [info.music === "own" && "music", info.preview && "preview", info.minimap && "minimap"]
       .filter(Boolean);
     const own = has.length > 1 ? `${has.slice(0, -1).join(", ")} and ${has[has.length - 1]}` : has[0];
-    return `Plays as ${info.plays}${own ? `, with its own ${own}` : ""}.`
-      + (info.music === "wrong" ? " Its music isn't in the game's format." : "");
+    return `Replaces ${info.plays}${own ? `, with its own ${own}` : ""}.`
+      + (info.music === "wrong" ? " Its music can't play in the game, so you get the game's own." : "");
   };
   const showCourses = () => {
     part("course-list").replaceChildren(...courses.map(course => {
@@ -339,7 +339,8 @@ function showReady(ready) {
       row.append(title, about, remove, line);
       return row;
     }));
-    say(part("courses-info"), courses.length ? `${courses.length} of your own courses, ${mb(pakSize(courses))}.` : "");
+    say(part("courses-info"), courses.length
+      ? `${courses.length} ${courses.length === 1 ? "course" : "courses"} to add, ${mb(pakSize(courses))}.` : "");
     check();
   };
   part("courses").onchange = async e => {

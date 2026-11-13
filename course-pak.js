@@ -1,4 +1,4 @@
-// Your own courses on an Ultra disc of Double Dash. The disc ends with mkddu/courses.pak: an index, then the course
+// Custom courses on an Ultra disc of Double Dash. The disc ends with mkddu/courses.pak: an index, then the course
 // ZIPs as they are. courseSink fills it while the patcher writes the ISO. Loaded after patcher-core.js.
 
 const PAK_MAGIC = 0x5550414b;  // "UPAK"
@@ -16,7 +16,7 @@ async function pakBytes(blob, offset, length) {
   return new DataView(bytes.buffer);
 }
 
-// What the game takes of a course ZIP, by the rules of its own reader (ultra/src/user/zip.c and package.c of
+// What the game takes of a course ZIP, by the rules of its own reader (ultra/src/custom/zip.c and package.c of
 // mkdd-ultra, which tests/package_rules.py there holds this against)
 const ZIP_TAIL = 1024;             // the end record is looked for this far from the end
 const ZIP_DIRECTORY = 0x4000;      // the most of the list of files
@@ -286,7 +286,7 @@ function findPak(disc) {
       child = disc.getUint8(table + child * 12) ? disc.getUint32(table + child * 12 + 8) : child + 1;
     }
     if (child >= end) {
-      throw new PatchError("This version of Ultra can't take your own courses yet.");
+      throw new PatchError("This version of Ultra can't take custom courses yet.");
     }
     entry = child;
   }

@@ -59,7 +59,7 @@ function fill(box) {
           <input type="file" accept=".patch" data-p="patch">
         </label>
         <label class="slot file" data-p="courses-step"${game === "mkdd" ? "" : " hidden"}>
-          <span><b>Your own courses</b><span>Optional: course ZIPs to put on the disc. Drop them here or click.</span></span>
+          <span><b>Custom courses</b><span>Optional: course ZIPs to put on the disc. Drop them here or click.</span></span>
           <input type="file" accept=".zip" multiple data-p="courses">
         </label>
         <ul class="own" data-p="course-list"></ul>

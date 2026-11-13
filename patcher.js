@@ -152,7 +152,7 @@ function showReady(ready) {
   clean.onclick = e => { if (e.target === clean) { clean.close(); } };  // a click on the backdrop closes it
   part("patch-step").hidden = Boolean(url);
   let disc = null, patch = null, manifest = null, running = false;
-  let courses = [];  // to add to the disc, by their file's name: {name, blob, title, author}
+  let courses = [];  // to add to the disc, by their file's name: {name, blob, info (courseInfo's)}
   // The two sizes of the ISO, once the patch is known
   const showSizes = () => {
     part("full").textContent = `Full ISO, ${gb(isoSize(manifest, true))}`;
@@ -311,22 +311,32 @@ function showReady(ready) {
     part("go").disabled = running || !right || !ready() || room < 0;
   }
 
+  // What the game takes of a course: the course it plays as and which of its own things it brings
+  const courseLine = info => {
+    const has = [info.music === "own" && "music", info.preview && "preview", info.minimap && "minimap"]
+      .filter(Boolean);
+    const own = has.length > 1 ? `${has.slice(0, -1).join(", ")} and ${has[has.length - 1]}` : has[0];
+    return `Plays as ${info.plays}${own ? `, with its own ${own}` : ""}.`
+      + (info.music === "wrong" ? " Its music isn't in the game's format." : "");
+  };
   const showCourses = () => {
     part("course-list").replaceChildren(...courses.map(course => {
       const row = document.createElement("li");
       const title = document.createElement("b");
       const about = document.createElement("span");
       const remove = document.createElement("button");
-      title.textContent = course.title;
-      about.textContent = `${course.author ? `by ${course.author}, ` : ""}${mb(course.blob.size)}`;
+      const line = document.createElement("small");
+      title.textContent = course.info.name;
+      about.textContent = `${course.info.author ? `by ${course.info.author}, ` : ""}${mb(course.blob.size)}`;
+      line.textContent = courseLine(course.info);
       remove.textContent = "×";
-      remove.setAttribute("aria-label", `Remove ${course.title}`);
+      remove.setAttribute("aria-label", `Remove ${course.info.name}`);
       remove.disabled = running;
       remove.onclick = () => {
         courses = courses.filter(other => other !== course);
         showCourses();
       };
-      row.append(title, about, remove);
+      row.append(title, about, remove, line);
       return row;
     }));
     say(part("courses-info"), courses.length ? `${courses.length} of your own courses, ${mb(pakSize(courses))}.` : "");
@@ -338,7 +348,7 @@ function showReady(ready) {
       try {
         const info = await courseInfo(blob);
         courses = courses.filter(course => course.name !== blob.name);
-        courses.push({ name: blob.name, blob, title: info.name, author: info.author });
+        courses.push({ name: blob.name, blob, info });
       } catch (error) {
         wrong = error instanceof PatchError ? error.message : `${blob.name} can't be read.`;
       }

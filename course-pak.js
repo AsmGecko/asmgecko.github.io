@@ -16,48 +16,240 @@ async function pakBytes(blob, offset, length) {
   return new DataView(bytes.buffer);
 }
 
-// The name and maker of a course ZIP, from its trackinfo.ini. Throws for a ZIP the game would skip.
-async function courseInfo(blob) {
-  const notOne = new PatchError(`${blob.name || "This ZIP"} is not a course.`);
-  const tailAt = Math.max(0, blob.size - 66000);
-  const tail = await pakBytes(blob, tailAt, blob.size - tailAt);
-  let end = tail.byteLength - 22;
-  while (end >= 0 && tail.getUint32(end, true) !== 0x06054b50) {
-    end -= 1;
+// What the game takes of a course ZIP, by the rules of its own reader (ultra/src/user/zip.c and package.c of
+// mkdd-ultra, which tests/package_rules.py there holds this against)
+const ZIP_TAIL = 1024;             // the end record is looked for this far from the end
+const ZIP_DIRECTORY = 0x4000;      // the most of the list of files
+const PACKAGE_TEXT = 0x800;        // and of trackinfo.ini and minimap.json
+const PACKAGE_SNIFF = 0x2000;      // the start of the archive, which has its file names
+const ARCHIVE_MOST = 0x280000 - 0x30000;
+const NAME_MOST = 0x20000;
+const TEXT_MOST = 31;
+const PREVIEW_SIZE = 23584;        // a 256x184 CMPR picture
+const SONG_BLOCK = 0x2760;
+const MINIMAP_MOST = 1000000;
+const RACE_SLOTS = 16;
+// The courses of the game by their archives' names, the race courses first
+const COURSES = [
+  ["Luigi", "Luigi Circuit"], ["Peach", "Peach Beach"], ["BabyLuigi", "Baby Park"], ["Desert", "Dry Dry Desert"],
+  ["Nokonoko", "Mushroom Bridge"], ["Mario", "Mario Circuit"], ["Daisy", "Daisy Cruiser"],
+  ["Waluigi", "Waluigi Stadium"], ["Snow", "Sherbet Land"], ["Patapata", "Mushroom City"], ["Yoshi", "Yoshi Circuit"],
+  ["Donkey", "DK Mountain"], ["Wario", "Wario Colosseum"], ["Diddy", "Dino Dino Jungle"], ["Koopa", "Bowser's Castle"],
+  ["Rainbow", "Rainbow Road"], ["Mini7", "Cookie Land"], ["Mini2", "Nintendo GameCube"], ["Mini3", "Block City"],
+  ["Mini8", "Pipe Plaza"], ["Mini1", "Luigi's Mansion"], ["Mini5", "Tilt-A-Kart"],
+];
+const CONSOLES = ["NGC", "SNES", "N64", "GBA", "DS", "WII", "3DS", "GP", "GCN"];
+
+const latin = bytes => Array.from(bytes, byte => String.fromCharCode(byte)).join("");
+
+// The entries of a ZIP's list of files: {name, locked, method, crc, packed, size, header}
+async function zipEntries(blob, wrong) {
+  const tail = Math.min(blob.size, ZIP_TAIL);
+  const end = await pakBytes(blob, blob.size - tail, tail);
+  let at = tail - 22;
+  while (at >= 0 && end.getUint32(at, true) !== 0x06054b50) {
+    at -= 1;
   }
-  if (end < 0) {
-    throw notOne;
+  if (at < 0) {
+    throw wrong(tail < 22 || blob.size <= ZIP_TAIL ? "is not a ZIP" : "has a comment the game can't read past");
   }
-  const list = await pakBytes(blob, tail.getUint32(end + 16, true), tail.getUint32(end + 12, true));
-  const files = {};
-  for (let at = 0; at + 46 <= list.byteLength && list.getUint32(at, true) === 0x02014b50;) {
-    const length = list.getUint16(at + 28, true);
-    let name = "";
-    for (let i = 0; i < length; i += 1) {
-      name += String.fromCharCode(list.getUint8(at + 46 + i));
+  const length = end.getUint32(at + 12, true);
+  if (length > ZIP_DIRECTORY) {
+    throw wrong("has more files than the game can list");
+  }
+  const offset = end.getUint32(at + 16, true);
+  if (offset > blob.size || length > blob.size - offset) {
+    throw wrong("is damaged");
+  }
+  const list = await pakBytes(blob, offset, length);
+  const entries = [];
+  for (let record = 0; record + 46 <= length && list.getUint32(record, true) === 0x02014b50;) {
+    const name = list.getUint16(record + 28, true);
+    if (name > length - record - 46) {
+      break;
     }
-    files[name.toLowerCase().split("/").pop()] = {
-      method: list.getUint16(at + 10, true), packed: list.getUint32(at + 20, true), at: list.getUint32(at + 42, true),
-    };
-    at += 46 + length + list.getUint16(at + 30, true) + list.getUint16(at + 32, true);
+    entries.push({
+      name: latin(new Uint8Array(list.buffer, record + 46, name)), locked: list.getUint16(record + 8, true) & 1,
+      method: list.getUint16(record + 10, true), crc: list.getUint32(record + 16, true),
+      packed: list.getUint32(record + 20, true), size: list.getUint32(record + 24, true),
+      header: list.getUint32(record + 42, true),
+    });
+    record += 46 + name + list.getUint16(record + 30, true) + list.getUint16(record + 32, true);
   }
-  const ini = files["trackinfo.ini"];
-  if (!ini || !files["track.arc"] || (ini.method !== 0 && ini.method !== 8)) {
-    throw notOne;
+  return entries;
+}
+
+// The entry named wanted (lowercase) in the package's folder, which is that of its trackinfo.ini; null when it isn't
+// there or the game can't unpack it, which pack.why then says
+function zipEntry(entries, pack, wanted) {
+  for (const entry of entries) {
+    const before = pack.folder === null ? entry.name.length - wanted.length : pack.folder.length;
+    if (before >= 0 && entry.name.length === before + wanted.length &&
+        entry.name.slice(before).toLowerCase() === wanted && (before === 0 || entry.name[before - 1] === "/") &&
+        (pack.folder === null || entry.name.startsWith(pack.folder))) {
+      pack.folder = entry.name.slice(0, before);
+      pack.why = entry.locked ? "is locked with a password"
+        : entry.method !== 0 && entry.method !== 8 ? "is packed in a way the game can't read" : "";
+      return pack.why ? null : entry;
+    }
   }
-  const head = await pakBytes(blob, ini.at, 30);
-  const start = ini.at + 30 + head.getUint16(26, true) + head.getUint16(28, true);
-  const packed = blob.slice(start, start + ini.packed);
-  const text = await new Response(
-    ini.method ? packed.stream().pipeThrough(new DecompressionStream("deflate-raw")) : packed).text();
-  const value = (key) => (text.match(new RegExp(`^\\s*${key}\\s*=\\s*(.*?)\\s*$`, "im")) || [])[1] || "";
-  if (!value("trackname")) {
-    throw notOne;
+  return null;
+}
+
+// Up to most bytes from the start of an entry, or null when its data isn't where the ZIP says
+async function zipStart(blob, entry, most) {
+  if (entry.header > blob.size || 30 > blob.size - entry.header) {
+    return null;
   }
-  if (value("code_patches")) {
-    throw new PatchError(`${value("trackname")} needs its own code, which Ultra can't load.`);
+  const head = await pakBytes(blob, entry.header, 30);
+  const start = entry.header + 30 + head.getUint16(26, true) + head.getUint16(28, true);
+  if (head.getUint32(0, true) !== 0x04034b50 || start > blob.size || entry.packed > blob.size - start ||
+      (entry.method === 0 && entry.packed !== entry.size)) {
+    return null;
   }
-  return {name: value("trackname"), author: value("author")};
+  const want = Math.min(most, entry.size);
+  const packed = blob.slice(start, start + entry.packed);
+  if (entry.method === 0) {
+    return new Uint8Array(await packed.slice(0, want).arrayBuffer());
+  }
+  const out = new Uint8Array(want);
+  const reader = packed.stream().pipeThrough(new DecompressionStream("deflate-raw")).getReader();
+  let got = 0;
+  try {
+    while (got < want) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+      out.set(value.subarray(0, want - got), got);
+      got += Math.min(value.length, want - got);
+    }
+  } catch (error) {
+    // Damaged from here on: the game has what came before
+  }
+  reader.cancel().catch(() => {});
+  return out.subarray(0, got);
+}
+
+// A whole entry, checked as the game checks it, or null
+async function zipWhole(blob, entry) {
+  const bytes = await zipStart(blob, entry, entry.size);
+  return bytes && bytes.length === entry.size && crc32(bytes) === entry.crc ? bytes : null;
+}
+
+// The value of key in an ini as the game reads it: in capitals, only with the letters its labels have
+function iniValue(text, key) {
+  for (const line of text.split("\n")) {
+    const found = line.slice(0, key.length).toLowerCase() === key &&
+                  line.slice(key.length).match(/^[ \t]*=[ \t]*([^\r]*)/);
+    if (found) {
+      return Array.from(found[1].toUpperCase()).filter(letter => /[A-Z0-9 '\-.!?&:+]/.test(letter))
+        .slice(0, TEXT_MOST).join("").replace(/ +$/, "");
+    }
+  }
+  return "";
+}
+
+// The number after "key": in JSON, as the game reads it, or null
+function jsonNumber(text, key) {
+  const found = text.match(new RegExp(`"${key}"[ :\\t\\r\\n]*(-?)([0-9.]*)`, "i"));
+  const digits = found && found[2].replace(/^([0-9]*\.?[0-9]*).*$/, "$1");
+  const number = digits && /[0-9]/.test(digits) ? Number(digits.replace(/\.$/, "")) : NaN;
+  return Number.isFinite(number) && number < MINIMAP_MOST ? (found[1] ? -number : number) : null;
+}
+
+// The course whose files the start of an archive is named for (luigi_course.bol), or -1
+function sniffedSlot(start) {
+  const text = latin(start).toLowerCase();
+  for (let at = text.indexOf("_course.bol"); at >= 0; at = text.indexOf("_course.bol", at + 1)) {
+    const name = text.slice(text.lastIndexOf("\0", at) + 1, at);
+    const slot = COURSES.findIndex(([archive]) => archive.toLowerCase() === name);
+    if (slot >= 0) {
+      return slot;
+    }
+  }
+  return -1;
+}
+
+// Whether the game's streams can play a song: 16 bits, at most stereo, in their blocks
+async function songFits(blob, entry) {
+  const head = entry.size >= 0x40 ? await zipStart(blob, entry, 0x40) : null;
+  const view = head && head.length === 0x40 ? new DataView(head.buffer, head.byteOffset, 0x40) : null;
+  return Boolean(view) && latin(head.subarray(0, 4)) === "STRM" && view.getUint16(0x0a) === 16 &&
+         view.getUint16(0x0c) >= 1 && view.getUint16(0x0c) <= 2 && view.getUint32(0x20) === SONG_BLOCK;
+}
+
+// What a course ZIP is and what the game takes of it: {name, author, label (the name as the game shows it), slot,
+// plays, stage, music ("own", "wrong" or ""), packedMusic, preview, minimap}. Throws for a ZIP the game would leave
+// out, with the reason.
+async function courseInfo(blob) {
+  const file = blob.name || "This ZIP";
+  const wrong = why => new PatchError(`${file} ${why}.`);
+  const entries = await zipEntries(blob, wrong);
+  const pack = { folder: null, why: "" };
+  const ini = zipEntry(entries, pack, "trackinfo.ini");
+  if (!ini || ini.size >= PACKAGE_TEXT) {
+    throw wrong(pack.why || "is not a course");
+  }
+  const track = zipEntry(entries, pack, "track.arc");
+  if (!track) {
+    throw wrong(pack.why || "has no track.arc beside its trackinfo.ini");
+  }
+  const split = zipEntry(entries, pack, "track_mp.arc");
+  if (track.size > ARCHIVE_MOST || (split && split.size > ARCHIVE_MOST)) {
+    throw wrong("is too big for the game");
+  }
+  const text = await zipWhole(blob, ini);
+  if (!text) {
+    throw wrong("is damaged");
+  }
+  const raw = key => ((latin(text).split("\n").find(line => line.slice(0, key.length).toLowerCase() === key) || "")
+    .match(/=[ \t]*([^\r]*)/) || [])[1] || "";
+  let shown = iniValue(latin(text), "trackname");
+  for (const console of CONSOLES) {
+    if (shown.startsWith(`${console} `) && shown.length > console.length + 1) {
+      shown = shown.slice(console.length + 1).trimStart();
+      break;
+    }
+  }
+  if (!shown) {
+    throw wrong("has no name the game can show");
+  }
+  const name = raw("trackname").trim();
+  if (iniValue(latin(text), "code_patches")) {
+    throw new PatchError(`${name} needs its own code, which Ultra can't load.`);
+  }
+  const start = await zipStart(blob, track, PACKAGE_SNIFF);
+  const slot = start ? sniffedSlot(start) : -1;
+  if (slot < 0) {
+    throw new PatchError(`${name} isn't made for one of the game's courses.`);
+  }
+
+  const info = { name, author: raw("author").trim(), label: shown, slot, plays: COURSES[slot][1],
+                 stage: slot >= RACE_SLOTS, music: "", packedMusic: false, preview: false, minimap: false };
+  for (const song of slot < RACE_SLOTS ? ["lap_music_normal.ast", "lap_music_fast.ast"] : []) {
+    const entry = zipEntry(entries, { ...pack }, song);
+    if (entry && await songFits(blob, entry)) {
+      info.music = "own";
+      info.packedMusic = info.packedMusic || entry.method === 8;
+    } else if (entry && !info.music) {
+      info.music = "wrong";
+    }
+  }
+  const preview = zipEntry(entries, { ...pack }, "course_images/english/track_image.bti");
+  const picture = preview && preview.size === PREVIEW_SIZE ? await zipWhole(blob, preview) : null;
+  info.preview = Boolean(picture) && picture[0] === 0x0e && (picture[2] << 8 | picture[3]) === 256 &&
+                 (picture[4] << 8 | picture[5]) === 184 && picture[0x1e] === 0 && picture[0x1f] === 0x20;
+  const minimap = zipEntry(entries, { ...pack }, "minimap.json");
+  const json = minimap && minimap.size < PACKAGE_TEXT ? await zipWhole(blob, minimap) : null;
+  if (json) {
+    const corners = ["Top Left Corner X", "Top Left Corner Z", "Bottom Right Corner X", "Bottom Right Corner Z"]
+      .map(key => jsonNumber(latin(json), key));
+    const turn = jsonNumber(latin(json), "Orientation");
+    info.minimap = corners.every(corner => corner !== null) && turn !== null && turn >= 0 && turn <= 3 &&
+                   Number.isInteger(turn);
+  }
+  return info;
 }
 
 const padded = size => size + (-size & (PAK_ALIGN - 1));

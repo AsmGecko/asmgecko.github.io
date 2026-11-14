@@ -349,7 +349,7 @@ function showReady(ready) {
       try {
         const info = await courseInfo(blob);
         courses = courses.filter(course => course.name !== blob.name);
-        courses.push({ name: blob.name, blob, info });
+        courses.push({ name: blob.name, blob: info.packedMusic ? await songsStored(blob) : blob, info });
       } catch (error) {
         wrong = error instanceof PatchError ? error.message : `${blob.name} can't be read.`;
       }

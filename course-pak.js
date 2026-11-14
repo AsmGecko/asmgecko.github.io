@@ -42,8 +42,9 @@ const CONSOLES = ["NGC", "SNES", "N64", "GBA", "DS", "WII", "3DS", "GP", "GCN"];
 
 const latin = bytes => Array.from(bytes, byte => String.fromCharCode(byte)).join("");
 
-// The entries of a ZIP's list of files: {name, locked, method, crc, packed, size, header}
-async function zipEntries(blob, wrong) {
+// A ZIP's list of files: where it is, where the end record after it is, and its entries as {name, locked, method,
+// crc, packed, size, header, record (where in the list)}
+async function zipList(blob, wrong) {
   const tail = Math.min(blob.size, ZIP_TAIL);
   const end = await pakBytes(blob, blob.size - tail, tail);
   let at = tail - 22;
@@ -72,12 +73,14 @@ async function zipEntries(blob, wrong) {
       name: latin(new Uint8Array(list.buffer, record + 46, name)), locked: list.getUint16(record + 8, true) & 1,
       method: list.getUint16(record + 10, true), crc: list.getUint32(record + 16, true),
       packed: list.getUint32(record + 20, true), size: list.getUint32(record + 24, true),
-      header: list.getUint32(record + 42, true),
+      header: list.getUint32(record + 42, true), record,
     });
     record += 46 + name + list.getUint16(record + 30, true) + list.getUint16(record + 32, true);
   }
-  return entries;
+  return { entries, offset, length, end: blob.size - tail + at };
 }
+
+const zipEntries = async (blob, wrong) => (await zipList(blob, wrong)).entries;
 
 // The entry named wanted (lowercase) in the package's folder, which is that of its trackinfo.ini; null when it isn't
 // there or the game can't unpack it, which pack.why then says
@@ -252,6 +255,57 @@ async function courseInfo(blob) {
   return info;
 }
 
+// The course ZIP with its zipped songs stored as they are instead, so the game streams them without unpacking; the
+// same ZIP when it has none
+async function songsStored(blob) {
+  const { entries, offset, length, end } = await zipList(blob, why => new PatchError(`This ZIP ${why}.`));
+  const pack = { folder: null, why: "" };
+  const songs = !zipEntry(entries, pack, "trackinfo.ini") ? []
+    : ["lap_music_normal.ast", "lap_music_fast.ast"].map(song => zipEntry(entries, { ...pack }, song))
+      .filter(entry => entry && entry.method === 8).sort((a, b) => a.header - b.header);
+  const parts = [], grown = [];
+  let copied = 0, growth = 0;
+  for (const song of songs) {
+    const bytes = await zipWhole(blob, song);
+    if (!bytes || song.header < copied) {
+      return blob;
+    }
+    const sizes = await pakBytes(blob, song.header, 30);
+    const head = await pakBytes(blob, song.header, 30 + sizes.getUint16(26, true) + sizes.getUint16(28, true));
+    const flags = head.getUint16(6, true);
+    let after = song.header + head.byteLength + song.packed;
+    // Its sizes come after the data when bit 3 is set, with or without a mark before them
+    if (flags & 8) {
+      after += (await pakBytes(blob, after, 4)).getUint32(0, true) === 0x08074b50 ? 16 : 12;
+    }
+    head.setUint16(6, flags & ~8, true);
+    head.setUint16(8, 0, true);
+    head.setUint32(14, song.crc, true);
+    head.setUint32(18, song.size, true);
+    head.setUint32(22, song.size, true);
+    parts.push(blob.slice(copied, song.header), head.buffer, bytes);
+    growth += song.header + head.byteLength + song.size - after;
+    grown.push({ from: song.header, by: growth });
+    copied = after;
+  }
+  if (!songs.length || copied > offset) {
+    return blob;
+  }
+  const list = await pakBytes(blob, offset, length);
+  for (const entry of entries) {
+    const moved = grown.filter(song => song.from < entry.header).pop();
+    list.setUint32(entry.record + 42, entry.header + (moved ? moved.by : 0), true);
+    if (songs.includes(entry)) {
+      list.setUint16(entry.record + 8, list.getUint16(entry.record + 8, true) & ~8, true);
+      list.setUint16(entry.record + 10, 0, true);
+      list.setUint32(entry.record + 20, entry.size, true);
+    }
+  }
+  const tail = await pakBytes(blob, offset + length, blob.size - offset - length);
+  tail.setUint32(end - offset - length + 16, offset + growth, true);
+  return new Blob([...parts, blob.slice(copied, offset), list.buffer, tail.buffer]);
+}
+
 const padded = size => size + (-size & (PAK_ALIGN - 1));
 
 // The size of a pak with these courses ([{name, blob}])
@@ -361,5 +415,5 @@ function courseSink(sink, courses, full) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { courseInfo, courseSink, pakSize };
+  module.exports = { courseInfo, courseSink, pakSize, songsStored };
 }

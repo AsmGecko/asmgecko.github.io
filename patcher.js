@@ -62,7 +62,7 @@ function fill(box) {
           <span><b>Custom courses</b><span>Optional: course ZIPs to put on the disc. Drop them here or click.</span></span>
           <input type="file" accept=".zip" multiple data-p="courses">
         </label>
-        <ul class="own" data-p="course-list"></ul>
+        <ul class="course-list" data-p="course-list"></ul>
         <div class="lcd">
           <div data-p="disc-info"></div>
           <div data-p="patch-info"></div>

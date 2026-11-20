@@ -13,13 +13,13 @@
  "release": {
   "id": "GM4EJ8",
   "size": 412385280,
-  "sha1": "4c645694fa9e6f46bd6462e9d725fc786b578f0a",
+  "sha1": "aa374b790e7deba8f6e2f3d0d8b48c8ed3658533",
   "name": "Mario Kart Double Dash Ultra v0.6 BETA [GM4EJ8].trim.iso"
  },
  "patch": {
   "name": "Mario Kart Double Dash Ultra v0.6 BETA [GM4EJ8].patch",
-  "size": 2508333,
-  "sha256": "2880a1c7d32d7ac9e2a2c0da7b6ea370b3575094520ada5f1cd6ea0f0e87f4a9",
+  "size": 2508590,
+  "sha256": "4eae9ee330e6cb223faa247299240b722d2162392666baf1a8eca29d10e71fc9",
   "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu0.6-beta.patch"
  },
  "pack": {
@@ -30,70 +30,70 @@
   "courses": 80,
   "stages": 30,
   "seal": {
-   "salt": "b2fd0c78571974eebad14bede3e0997b",
+   "salt": "94434be2af86b7f2c0d87765ca40f07b",
    "probes": [
     [
-     850524,
+     995689674,
      4096
     ],
     [
-     990530175,
+     1054466182,
      4096
     ],
     [
-     1043898571,
+     1056077728,
      4096
     ],
     [
-     1087711469,
+     1093225571,
      4096
     ],
     [
-     1175048680,
+     1119645229,
      4096
     ],
     [
-     1178411815,
+     1147206232,
      4096
     ],
     [
-     1187888195,
+     1160130090,
      4096
     ],
     [
-     1219207083,
+     1187874516,
      4096
     ],
     [
-     1247984227,
+     1192240491,
      4096
     ],
     [
-     1252023351,
+     1232985711,
      4096
     ],
     [
-     1258053347,
+     1237670670,
      4096
     ],
     [
-     1274309170,
+     1256102062,
      4096
     ],
     [
-     1298510622,
+     1282348326,
      4096
     ],
     [
-     1300392764,
+     1330641477,
      4096
     ],
     [
-     1332146644,
+     1347054621,
      4096
     ],
     [
-     1354520693,
+     1445872601,
      4096
     ]
    ],
@@ -102,13 +102,13 @@
  },
  "sd": {
   "name": "Mario Kart Double Dash Ultra SD Card v0.6 BETA.zip",
-  "size": 5757557,
-  "sha256": "9f138c887202070a67e6d2f604c6f7f66adf0116897f60e8bb1fbd0f84037663",
+  "size": 5756693,
+  "sha256": "99cb90ddefada53d9c53abd9e9f4883c317429d09832797dcdf8988ca1d66f93",
   "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu-sd-0.6-beta.zip",
   "seal": {
-   "salt": "872d1ecfb0ad038b45f4a0136c0c991b",
+   "salt": "3995ca94a1d2fdf31b0783216f4054f3",
    "probes": [],
-   "head": "f23b5b0799d169bf5d0c08bf40d76eeb3b13f29b6a5c64f17714602af67e90af"
+   "head": "5a1edb89d93911abfc2859c2f23afa9c431b7b27395cdaf4469c6972f1b265cb"
   }
  },
  "sdpack": {
@@ -117,7 +117,7 @@
   "sha256": "18a8596de0ba5d691a52b57b04d9cb3e0edcc6288fabe8bc5f71a484f979513e",
   "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu-sdr-0.6-beta.zip",
   "seal": {
-   "salt": "9fa80cdd197874e05b0f89d061e712c3",
+   "salt": "eb1a11e99fd23f50e404391860ec8e8b",
    "probes": [],
    "head": "ae80399f1d80e0b49ae3e8cb86f9cb2053e6a5b06c21023cf99ab31276bc640b"
   }

@@ -1,0 +1,125 @@
+{
+ "game": "mkdd",
+ "title": "Mario Kart: Double Dash!! Ultra",
+ "version": "0.6 BETA",
+ "date": "2026-11-20",
+ "retail": {
+  "id": "GM4E01",
+  "size": 1459978240,
+  "crc32": "099e2c6d",
+  "md5": "97f9ebc39ab4244e419848793988561a",
+  "sha1": "34bdef709a1ae9799fdabe8e54cff1c7d3665f2b"
+ },
+ "release": {
+  "id": "GM4EJ8",
+  "size": 412385280,
+  "sha1": "4c645694fa9e6f46bd6462e9d725fc786b578f0a",
+  "name": "Mario Kart Double Dash Ultra v0.6 BETA [GM4EJ8].trim.iso"
+ },
+ "patch": {
+  "name": "Mario Kart Double Dash Ultra v0.6 BETA [GM4EJ8].patch",
+  "size": 2508333,
+  "sha256": "2880a1c7d32d7ac9e2a2c0da7b6ea370b3575094520ada5f1cd6ea0f0e87f4a9",
+  "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu0.6-beta.patch"
+ },
+ "pack": {
+  "name": "Mario Kart Double Dash Ultra Retro Pack v0.6 BETA.pak",
+  "size": 431162944,
+  "sha256": "9419a1225b596c82518361cfec2a18a35236a04f2a313b4eca730e58e35a0488",
+  "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu-r-0.6-beta.pak",
+  "courses": 80,
+  "stages": 30,
+  "seal": {
+   "salt": "b2fd0c78571974eebad14bede3e0997b",
+   "probes": [
+    [
+     850524,
+     4096
+    ],
+    [
+     990530175,
+     4096
+    ],
+    [
+     1043898571,
+     4096
+    ],
+    [
+     1087711469,
+     4096
+    ],
+    [
+     1175048680,
+     4096
+    ],
+    [
+     1178411815,
+     4096
+    ],
+    [
+     1187888195,
+     4096
+    ],
+    [
+     1219207083,
+     4096
+    ],
+    [
+     1247984227,
+     4096
+    ],
+    [
+     1252023351,
+     4096
+    ],
+    [
+     1258053347,
+     4096
+    ],
+    [
+     1274309170,
+     4096
+    ],
+    [
+     1298510622,
+     4096
+    ],
+    [
+     1300392764,
+     4096
+    ],
+    [
+     1332146644,
+     4096
+    ],
+    [
+     1354520693,
+     4096
+    ]
+   ],
+   "head": "a904fc703f5e5cdd2fec11acb342068d5b9c40804e3420e5976a6bd45ffe862a"
+  }
+ },
+ "sd": {
+  "name": "Mario Kart Double Dash Ultra SD Card v0.6 BETA.zip",
+  "size": 5757557,
+  "sha256": "9f138c887202070a67e6d2f604c6f7f66adf0116897f60e8bb1fbd0f84037663",
+  "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu-sd-0.6-beta.zip",
+  "seal": {
+   "salt": "872d1ecfb0ad038b45f4a0136c0c991b",
+   "probes": [],
+   "head": "f23b5b0799d169bf5d0c08bf40d76eeb3b13f29b6a5c64f17714602af67e90af"
+  }
+ },
+ "sdpack": {
+  "name": "Mario Kart Double Dash Ultra Retro Pack v0.6 BETA.zip",
+  "size": 431163098,
+  "sha256": "18a8596de0ba5d691a52b57b04d9cb3e0edcc6288fabe8bc5f71a484f979513e",
+  "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu-sdr-0.6-beta.zip",
+  "seal": {
+   "salt": "9fa80cdd197874e05b0f89d061e712c3",
+   "probes": [],
+   "head": "ae80399f1d80e0b49ae3e8cb86f9cb2053e6a5b06c21023cf99ab31276bc640b"
+  }
+ }
+}

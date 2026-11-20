@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noimageindex, noarchive, nosnippet">
+<script src="../gate.js?v=5fd23a5c"></script>
+<title>Ultra Editions · Get Ultra</title>
+<meta name="description" content="Get Double Dash Ultra: the SD card version for a GameCube or a Wii, or the Ultra Patcher for Dolphin and Nintendont.">
+<link rel="stylesheet" href="style.css?v=5fd23a5c">
+<style>
+/* Getting started with MKDD Ultra: what it is, where you play (diagram), the SD card version (download.js), the Ultra
+   Patcher (patcher.js), more courses and the changelog. What it shares with the other pages is in style.css. */
+section { padding: 56px 0 0; }
+.top { padding: 28px 0 0; }
+.top h1 { margin: 6px 0 0; font-family: var(--display); font-size: clamp(30px, 4vw, 48px); line-height: 1.1; }
+.lede { font-size: clamp(17px, 2vw, 20px); margin: 14px 0 0; max-width: 62ch; }
+.lede b { font-family: var(--display); font-weight: 400; color: var(--gold); }
+.where-play a { border: 2px solid var(--line); border-radius: 18px; padding: 16px 20px; color: var(--muted); }
+.where-play b { display: block; color: var(--ink); font-family: var(--display); font-weight: 400; font-size: 20px; }
+.where-play { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.sd-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 36px; align-items: start; margin-top: 12px; }
+.card-tree { border: 2px solid var(--line); border-radius: 18px; padding: 18px 22px 20px; }
+.card-tree h3 { font-family: var(--display); font-weight: 400; font-size: 22px; margin: 0 0 10px; }
+.packs-box { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px); gap: 8px 36px; align-items: start; border: 2px solid var(--line); border-radius: 18px; padding: 20px 22px; }
+.packs-box .ways { margin: 0; }
+.packs-box .mini { grid-row: span 2; margin: 0; }
+.packs-box .btn { justify-self: start; }
+.notes { margin: 0; padding-left: 20px; color: var(--muted); display: grid; gap: 6px; max-width: 64ch; }
+.where-play a { text-decoration: none; display: grid; gap: 6px; align-content: start; }
+.where-play a:hover { border-color: var(--gold); }
+.where-play i { font-style: normal; color: var(--gold); font-family: var(--display); }
+.changes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 36px; margin: 0; }
+.changes div { border-top: 1px solid var(--line); padding-top: 10px; color: var(--muted); font-size: 16px; }
+.changes dt { color: var(--ink); font-family: var(--display); }
+.changes dd { margin: 0; }
+.changes dd ul { margin: 4px 0 0; padding-left: 20px; display: grid; gap: 4px; }
+.install p { color: var(--muted); max-width: 64ch; }
+.install strong { color: var(--ink); }
+.get { display: grid; gap: 10px; justify-items: start; max-width: 64ch; margin: 0 0 22px; }
+.get .btn { font-size: 22px; padding: 14px 30px; border: 0; cursor: pointer; }
+.get .btn:disabled { opacity: 0.5; cursor: default; }
+.get progress { width: 100%; }
+.get p { margin: 0; }
+.get [hidden], .cta[hidden] { display: none; }
+.steps .get { margin: 10px 0 4px; }
+.steps .get .btn { font-size: 18px; padding: 10px 22px; }
+.get .bad { color: var(--bad); }
+.steps .where { margin-top: 4px; font-size: 14px; }
+.steps .where summary { cursor: pointer; color: var(--ink); }
+.steps .where code { font-family: var(--mono); font-size: 13px; overflow-wrap: anywhere; }
+.check { max-width: min(64ch, calc(100vw - 32px)); border: 2px solid var(--edge); border-radius: 14px; padding: 0; color: var(--muted); font-size: 15px; background: var(--bg); color-scheme: inherit; }
+.check > div { padding: 18px 22px; }
+.check::backdrop { background: #0a1030cc; }
+.check h3 { margin: 0 0 8px; color: var(--ink); font-size: 20px; }
+.check p { margin: 10px 0; }
+.check form { margin: 14px 0 0; }
+.check form button { font: inherit; font-weight: 600; padding: 8px 18px; border-radius: 999px; border: 1px solid var(--edge); background: transparent; color: var(--ink); cursor: pointer; }
+.release { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 0 0 6px; }
+.release dt { color: var(--muted); }
+.release dd { margin: 0; }
+.release .hash { font-family: var(--mono); font-size: 12px; word-break: break-all; align-self: center; }
+
+/* Where an SD card can be and what goes on it */
+.get-tabs { display: flex; gap: 6px; margin: 14px 0 22px; border-bottom: 2px solid var(--line); }
+.get-tabs button { font: inherit; font-family: var(--display); font-size: 20px; color: var(--muted); background: none; border: 0; border-bottom: 4px solid transparent; margin-bottom: -2px; padding: 8px 18px; cursor: pointer; }
+.get-tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--gold); }
+.card-help { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; margin: 4px 0 18px; }
+.card-help.one { grid-template-columns: minmax(0, 1fr); }
+.card-help > div { border: 2px solid var(--line); border-radius: 18px; padding: 18px 22px 20px; }
+.card-help h3 { font-family: var(--display); font-weight: 400; font-size: 22px; margin: 0 0 10px; }
+.card-help ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; color: var(--muted); }
+.card-help li b { display: block; color: var(--ink); font-family: var(--display); font-weight: 400; }
+.ways { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 10px; color: var(--muted); }
+.ways li b { display: block; color: var(--ink); font-family: var(--display); font-weight: 400; }
+.tree { font-family: var(--mono); font-size: 15px; line-height: 1.9; margin: 0; }
+.tree i { font-style: normal; color: var(--gold); }
+.tree span { font-family: var(--body); color: var(--muted); font-size: 14px; margin-left: 14px; }
+
+/* The patcher beside a card for the Pack Maker, and the packs in it: a row each, and how much of the disc they take */
+.install-cols { display: grid; grid-template-columns: minmax(0, 680px) minmax(0, 1fr); gap: 28px; align-items: start; margin-top: 18px; }
+.install-cols .patcher { margin-top: 0; }
+.install-cols:has(.patcher[hidden]) { grid-template-columns: minmax(0, 480px); }
+.mini { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 16px; }
+.mini div { border-radius: 10px; border: 1px solid var(--line); padding: 8px 10px; font-family: var(--display); font-size: 13px; color: var(--gold); display: grid; gap: 4px; align-content: start; }
+.mini i { display: block; height: 6px; border-radius: 3px; background: var(--line); }
+.mini i:nth-child(3) { width: 80%; }
+.mini i:nth-child(4) { width: 90%; }
+.mini i:nth-child(5) { width: 65%; }
+.btn { display: inline-block; font-family: var(--display); font-size: 18px; letter-spacing: 0.04em; padding: 11px 24px; border-radius: 999px; background: #ffcf3a; color: #1a1300; text-decoration: none; box-shadow: 0 5px 0 #b07600; }
+.packs { display: grid; gap: 10px; padding: 14px 18px; border-radius: 14px; border: 2px solid #1b2a5c; background: #0a1030; }
+.packs > b { font-family: var(--display); font-weight: 400; font-size: 20px; }
+.pack-rows { display: contents; }
+.pack-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 10px 10px 10px 14px; border-radius: 10px; border: 1px solid #1b2a5c; background: #0d1538; }
+.pack-row b { font-family: var(--display); font-weight: 400; font-size: 18px; }
+.pack-row small { display: block; color: #a9b4d2; font-size: 14px; }
+.pack-row .seg label { padding: 5px 12px; font-size: 14px; }
+.pack-row .acts { display: flex; gap: 6px; align-items: center; }
+.pack-row .lcd { grid-column: 1 / -1; }
+.pack-row .lcd:has(div:empty) { display: none; }
+.packs .hint { color: #a9b4d2; font-size: 14px; }
+.packs .hint a { color: #ffcf3a; }
+.meter { display: grid; gap: 5px; font-size: 14px; color: #a9b4d2; }
+.meter .bar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: #061023; border: 1px solid #1b2a5c; }
+.meter .bar i { display: block; height: 100%; }
+.meter .key { display: flex; flex-wrap: wrap; gap: 2px 14px; }
+.meter .key span::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; background: var(--c); }
+.meter .key b { color: #f1f4fc; font-weight: 600; margin-left: auto; }
+.meter .key .bad { color: #ff6b5e; }
+@media (max-width: 960px) {
+  .install-cols, .card-help, .sd-cols { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  section { padding-top: 44px; }
+  .where-play, .changes, .packs-box { grid-template-columns: minmax(0, 1fr); }
+  .packs-box .mini { grid-row: auto; }
+  .packs { padding: 12px; }
+  .pack-row { grid-template-columns: minmax(0, 1fr); }
+  .pack-row .acts { justify-content: flex-end; }
+}
+</style>
+</head>
+<body>
+<div class="flag" aria-hidden="true"></div>
+<div class="page">
+  <nav class="crumbs"><a href="../">Ultra Editions</a> <span class="bar">|</span> <a href="./">Double Dash Ultra</a> · <span aria-current="page">Get Ultra</span> · <a href="pack-maker.html">Pack Maker</a></nav>
+
+  <header class="top">
+    <h1>Get Ultra</h1>
+    <p class="lede">Ultra brings Double Dash up to date: add courses and cups like DLC, plus the moves of Mario Kart Wii and the Ultra menu! Version <b data-fact="version">0.5 BETA</b>.</p>
+  </header>
+
+  <section class="install" id="get">
+    <h2>Where do you play?</h2>
+    <p class="intro">You need your own copy of Double Dash (USA).</p>
+    <div class="where-play">
+      <a href="#sd"><b>GameCube</b>Swiss, from an SD Gecko, SD2SP2 or GC Loader.<i>SD card version</i></a>
+      <a href="#sd"><b>Wii</b>From an SD card or USB drive.<i>SD card version</i></a>
+      <a href="#patcher"><b>Dolphin, Nintendont, or just as a disc</b>Patch your own disc.<i>Ultra Patcher</i></a>
+    </div>
+  </section>
+
+  <section class="install" id="install">
+    <div class="get-tabs" role="tablist">
+      <button type="button" role="tab" id="tab-sd" aria-controls="sd" aria-selected="true" data-card>SD card version</button>
+      <button type="button" role="tab" id="tab-patcher" aria-controls="patcher" aria-selected="false">Ultra Patcher</button>
+    </div>
+    <div id="sd" role="tabpanel" aria-labelledby="tab-sd" data-card>
+    <div class="sd-cols">
+      <div>
+        <ol class="steps">
+          <li><b>Download Ultra</b> and unzip it onto your SD card.
+            <div class="get" data-download="mkdd" data-file="sd" data-label="Download Ultra"></div></li>
+          <li><b>Optional:</b> add the Retro Pack! <span data-fact="pack.courses">80</span> courses and <span data-fact="pack.stages">30</span> stages!
+            <div class="get" data-download="mkdd" data-file="sdpack" data-label="Download the Retro Pack"></div></li>
+          <li><b>Put your own copy</b> of Double Dash (USA) anywhere on the card, or use the disc.</li>
+          <li><b>Start it:</b> <code>boot.dol</code> from Swiss on a GameCube, Ultra from the Homebrew Channel on a Wii.</li>
+        </ol>
+        <ul class="notes">
+          <li>To update, unzip the new Ultra over the old one. Your saves and packs are kept.</li>
+          <li>Hold <strong>B</strong> while Ultra starts for its menu. No disc yet? Put it in and you're racing!</li>
+        </ul>
+      </div>
+      <div class="card-tree">
+        <h3>On the card</h3>
+        <pre class="tree"><i>apps/mkddu/</i>
+  boot.dol<span>Ultra</span>
+  meta.xml<span>for the Homebrew Channel</span>
+<i>mkddu/</i>
+  <i>courses/</i>
+    *.pak<span>course packs</span>
+    *.zip<span>courses</span>
+    */<span>unzipped courses</span>
+  <i>card/</i><span>your saves</span>
+<i>anywhere</i>
+  Double Dash (USA)<span>your own copy, or the disc</span></pre>
+      </div>
+    </div>
+    </div>
+    <div id="patcher" role="tabpanel" aria-labelledby="tab-patcher" hidden>
+    <p class="intro" data-soon><strong>Coming soon.</strong> A free patch for your own disc, applied in your browser.</p>
+    <ol class="steps">
+      <li><b>Pick your copy</b> of Double Dash (USA).</li>
+      <li><b>Make Ultra</b> and play it in Dolphin or on your GameCube. The Retro Pack is included!</li>
+      <li><b>Optional:</b> add more course packs. Got one from a friend? Drop it in! Or make your own in the <a href="pack-maker.html">Pack Maker</a>.</li>
+      <li><b>Optional:</b> for 16:9 in Dolphin from the very first screen, put <a href="GM4EJ8.ini" download>GM4EJ8.ini</a> in its GameSettings folder.
+        <details class="where"><summary>Where's that?</summary>Windows: <code>Documents\Dolphin Emulator\GameSettings</code>, or <code>User\GameSettings</code> next to Dolphin.exe in a portable install.<br>macOS: <code>~/Library/Application Support/Dolphin/GameSettings</code>.<br>Linux: <code>~/.local/share/dolphin-emu/GameSettings</code>.<br>Flatpak: <code>~/.var/app/org.DolphinEmu.dolphin-emu/data/dolphin-emu/GameSettings</code>.</details></li>
+    </ol>
+    <div class="install-cols">
+      <div class="patcher" data-game="mkdd" hidden></div>
+    </div>
+    </div>
+  </section>
+
+  <section class="install" id="packs">
+    <h2>More courses</h2>
+    <p class="intro">Put course ZIPs, unzipped courses or packs in <code>mkddu/courses</code> on your SD card (Wii) or SDGecko/Swiss drive (Gamecube) to load them. They show on the CUSTOM pages.</p>
+    <div class="packs-box">
+      <ul class="ways">
+        <li><b>ZIPs from mkdd.org</b>Work as they are. (If the music file is too big, the audio may skip depending on your SD card. This can be fixed by making a pak.)</li>
+        <li><b>Packs</b>Smaller, and you set the cups yourself. Put the pack on your disc or your SD card, and share it with your friends for LAN play!</li>
+      </ul>
+      <div class="mini" aria-hidden="true">
+        <div>Shell Cup<i></i><i></i><i></i><i></i></div><div>Banana Cup<i></i><i></i><i></i><i></i></div>
+        <div>Leaf Cup<i></i><i></i><i></i><i></i></div><div>Friday Night Cup<i></i><i></i></div>
+      </div>
+      <a class="btn" href="pack-maker.html">Open the Pack Maker</a>
+    </div>
+  </section>
+
+  <section id="changelog">
+    <h2>Changelog</h2>
+    <dl class="changes">
+      <div><dt>0.6 beta</dt><dd><ul>
+        <li>Enabled LAN for Wii loader.</li>
+        <li>Improved loader UX</li>
+        <li>Support for unzipped courses</li>
+        <li>Give your cups their own icons! Drop a picture on a cup in the <a href="pack-maker.html">Pack Maker</a>.</li>
+        <li>The SD card version's menu has a new look, like the Ultra menu!</li>
+        <li>The SD card version's menu is sharp in 480p with a component cable!</li>
+        <li>Ultra has its own icon in the Homebrew Channel!</li>
+        <li>Fixed a black screen on PAL consoles at 50 Hz.</li>
+        <li>Packs show their version in the course pack overview.</li>
+        <li>Removed the widescreen question at the first start. Turn on 16:9 in the Ultra menu's Settings!</li>
+      </ul></dd></div>
+      <div><dt>0.5 beta</dt><dd><ul>
+        <li>New SD card version for Swiss on GameCube and the Homebrew Channel on Wii!</li>
+        <li>The SD card version works with a GC Loader, saves included!</li>
+        <li>Ultra and the Retro Pack are separate downloads, so updates are small!</li>
+        <li>The SD card version saves to the SD card, or to your memory card with memory card emulation off.</li>
+        <li>Hold B at startup for the settings and storage info of the SD card version!</li>
+        <li>Forgot the disc? Put it in and Ultra starts right away!</li>
+        <li>The SD card version runs from a USB drive on a Wii!</li>
+        <li>Added a course pack overview (press X on the Settings page).</li>
+        <li>Fixed a crash on broken custom courses.</li>
+        <li>Improved slipstream while drifting.</li>
+        <li>Improved audio levels of custom characters.</li>
+        <li>Fixed LAN play not finding the other consoles.</li>
+      </ul></dd></div>
+      <div><dt>0.4 beta</dt><dd><ul>
+        <li>The retro courses are now the Retro Pack! The Ultra Patcher puts it on your disc!</li>
+        <li>The patch is only 5 MB now.</li>
+        <li>The Ultra Patcher makes a custom course's music five times smaller, so it plays smoothly from a slow SD card!</li>
+        <li>SD card support! Put course ZIPs in <code>mkddu/courses</code> on your SD card and race them from the CUSTOM tab.</li>
+        <li>Custom courses get their own cups on CUSTOM pages of the cup select, for Versus, Grand Prix and Time Trials.</li>
+        <li>Time Trials on retro and custom courses keep their own records, with a staff ghost if the course has one!</li>
+        <li>Custom battle stages get their own pages in the stage select.</li>
+        <li>Make your own course pack in the <a href="pack-maker.html">Pack Maker</a>, with your own cups! Put it on the disc or save it for your SD card.</li>
+        <li>Race your pack in LAN play! Pick its pages in the LAN menu.</li>
+        <li>Drop a pack in the Ultra Patcher to put it on the disc, beside the Retro Pack.</li>
+        <li>Every custom course and battle stage shows its own picture.</li>
+      </ul></dd></div>
+      <div><dt>0.3 beta</dt><dd><ul>
+        <li>Add custom courses! Drop course ZIPs in the Ultra Patcher and race them from the CUSTOM tab.</li>
+        <li>Fixed a crash at the award ceremony after every Grand Prix.</li>
+        <li>Fixed a crash in battle when an item rule hands out a chain chomp.</li>
+        <li>Fixed a rare crash in bob-omb tag.</li>
+        <li>In a Grand Prix with three players the fourth screen follows P1, like in Versus.</li>
+        <li>Dry Dry Ruins updated to v1.2.</li>
+      </ul></dd></div>
+      <div><dt>0.2 beta</dt><dd><ul>
+        <li>Balloon race, a new game mode!</li>
+        <li>Knockout shows who's in the danger zone.</li>
+        <li>Red against blue teams in Versus and battle.</li>
+        <li>CPUs in battle mode.</li>
+        <li>Versus and battle for one player.</li>
+        <li>16 more retro courses and 6 battle stages on a new page, Retro 5.</li>
+        <li>X shows a list of all courses and battle stages, by console or from A to Z.</li>
+        <li>Triple shells circle your kart, and every character can get them.</li>
+        <li>Fragile karts that spin, freeze or blow up on contact!</li>
+        <li>Battles at 50cc to 200cc.</li>
+        <li>The Ultra menu works in LAN play, which also gets a character select.</li>
+        <li>The race results stay on the screen until P1 presses A, as in Mario Kart 64.</li>
+        <li>Up to 25% shorter loading times.</li>
+        <li>Tricks are on L and R, slide attack and look back on the D-pad.</li>
+        <li>Held items sit right behind every kart.</li>
+        <li>Shells don't sink into the ground anymore.</li>
+        <li>Tricks work off more bumps.</li>
+        <li>A crash now shows a crash screen right away, with your settings for a bug report.</li>
+        <li>Improved pause menu.</li>
+        <li>480p by default.</li>
+        <li>The D-pad works in every menu, and 150cc comes first.</li>
+      </ul></dd></div>
+      <div><dt>0.1 beta</dt><dd>Initial release.</dd></div>
+    </dl>
+  </section>
+  <footer>
+    <p>A fun passion project by <span class="by">AsmGecko</span> for my friend group. :)</p>
+    <p>A free fan project, not affiliated with, endorsed or sponsored by Nintendo. Mario Kart: Double Dash!!, Super Mario Strikers and their characters are trademarks of Nintendo. No game files are shared here: the patch only works with your own disc.</p>
+  </footer>
+</div>
+<script src="../patcher-core.js?v=5fd23a5c"></script>
+<script src="../course-music.js?v=5fd23a5c"></script>
+<script src="../course-pak.js?v=5fd23a5c"></script>
+<script src="../patcher.js?v=5fd23a5c"></script>
+<script src="../download.js?v=5fd23a5c"></script>
+</body>
+</html>

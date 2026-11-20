@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noimageindex, noarchive, nosnippet">
+<script src="../gate.js?v=5fd23a5c"></script>
+<title>Ultra Editions · Pack Maker</title>
+<meta name="description" content="Make your own course pack for Double Dash Ultra, with your own cups on its own pages in the game.">
+<link rel="stylesheet" href="style.css?v=5fd23a5c">
+<style>
+/* The Pack Maker of Double Dash Ultra (pack-maker.js): a wide box of the patcher's kind with a board like the cup
+   select, four cups a page, the picked course's texts beside it and the check list under it. On a phone the arrows
+   move a course and its texts open under it. */
+.maker-hero { padding: 22px 0 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 28px; align-items: end; }
+.maker-hero h1 { font-family: var(--display); font-size: clamp(30px, 4vw, 44px); line-height: 1.1; margin: 4px 0 6px; }
+.maker-hero .intro { margin: 0; }
+.maker-hero .steps { margin: 0; gap: 6px; font-size: 15px; }
+.maker-hero .steps li { min-height: 26px; padding-left: 36px; }
+.maker-hero .steps li::before { width: 24px; height: 24px; font-size: 14px; }
+.which { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr); gap: 6px 22px; align-items: baseline; margin-top: 18px; padding: 10px 18px; border: 1px solid var(--line); border-radius: 14px; color: var(--muted); font-size: 15px; }
+.which b { color: var(--ink); font-family: var(--display); font-weight: 400; margin-right: 6px; }
+.which > b { color: var(--gold); }
+
+.maker { max-width: none; margin-top: 18px; }
+.maker.drag { border-color: #ffcf3a; }
+.maker a { color: #ffcf3a; }
+.maker input[type=text], .maker select { font: inherit; font-size: 15px; padding: 6px 10px; border-radius: 8px; border: 1px solid #3c5aa8; background: #061023; color: #f1f4fc; min-width: 0; width: 100%; }
+.maker input::placeholder { color: #6b7aa6; }
+.maker input:focus-visible, .maker select:focus-visible, .maker button:focus-visible, .course:focus-visible { outline: 2px solid #ffcf3a; }
+.maker .head { display: grid; grid-template-columns: minmax(0, 360px) 72px 1fr auto; gap: 10px 18px; align-items: end; padding: 18px 22px; border-bottom: 1px solid #1b2a5c; }
+.maker .head label { display: grid; gap: 3px; font-size: 13px; color: #a9b4d2; }
+.maker .head label span { display: flex; justify-content: space-between; }
+.maker .head input { font-family: var(--display); font-size: 22px; padding: 6px 12px; }
+.stats { display: flex; flex-wrap: wrap; gap: 4px 18px; color: #a9b4d2; font-size: 15px; padding-bottom: 6px; }
+.stats b { color: #ffcf3a; font-family: var(--display); font-weight: 400; font-size: 18px; margin-right: 4px; }
+.maker .head .acts { display: flex; gap: 8px; padding-bottom: 2px; }
+
+/* Empty: one big place to drop ZIPs, over the cups to come */
+.start { padding: 26px 22px 30px; display: grid; gap: 18px; }
+.start .slot { grid-template-columns: 1fr; text-align: center; padding: 44px 18px; }
+.start .slot b { font-size: 28px; }
+.start .or { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: center; color: #a9b4d2; font-size: 15px; }
+.start .lcd:has(div:empty) { display: none; }
+.ghost { opacity: 0.45; pointer-events: none; }
+
+/* The board, and the side with the picked course and the courses in no cup */
+.work { display: grid; grid-template-columns: minmax(0, 1fr) 340px; }
+.board { padding: 18px 22px 22px; min-width: 0; }
+.side { border-left: 1px solid #1b2a5c; padding: 18px 18px 22px; display: grid; gap: 14px; align-content: start; background: #0a103066; }
+.pages { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; align-items: center; }
+.maker .pages button, .pages span { font-family: var(--display); font-size: 14px; letter-spacing: 0.05em; text-transform: uppercase; padding: 6px 14px; border-radius: 999px; border: 1px solid #26387a; background: none; color: #a9b4d2; box-shadow: none; }
+.maker .pages button[aria-pressed=true], .pages span, .maker .pages button.over { background: #ffcf3a; color: #1a1300; border-color: #ffcf3a; }
+.pages small { color: #a9b4d2; font-size: 13px; margin-left: 6px; }
+.battle { margin-top: 22px; }
+.cups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.cup { border-radius: 14px; border: 2px solid #1b2a5c; background: #0a1030; padding: 10px; display: grid; gap: 6px; align-content: start; }
+.cup-head { display: grid; grid-template-columns: 56px auto 1fr auto; gap: 2px 8px; align-items: center; margin-bottom: 2px; }
+.cup-head i { font-style: normal; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: #ffcf3a; color: #1a1300; font-family: var(--display); font-size: 15px; }
+.maker .cup-head input { font-family: var(--display); font-size: 17px; color: #ffcf3a; background: transparent; border-color: transparent; border-bottom: 1px dashed #3c5aa8; border-radius: 0; padding: 2px 4px; }
+.cup-head small { color: #a9b4d2; font-size: 13px; }
+/* A cup's icon: drop a picture on the cup or click the square. The square has the cup select's brown behind it */
+.cup .icon { grid-row: span 2; position: relative; width: 56px; height: 56px; border-radius: 12px; border: 2px dashed #3c5aa8; background: #312300; display: grid; place-items: center; cursor: pointer; }
+.cup .icon.own { border-style: solid; border-color: #26387a; }
+.cup .icon input { position: absolute; opacity: 0; width: 0; height: 0; }
+.cup .icon img { width: 48px; height: 48px; }
+.cup .icon b { position: absolute; right: -7px; bottom: -7px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: #3c5aa8; color: #f1f4fc; font-family: var(--display); font-weight: 400; font-size: 15px; line-height: 1; }
+.cup .icon.own b { display: none; }
+.cup .icon:hover, .cup .icon:has(input:focus-visible), .cup.over .icon { border-color: #ffcf3a; }
+.cup .icon:hover b, .cup.over .icon b { background: #ffcf3a; color: #1a1300; }
+.cup .icon:has(input:focus-visible) { outline: 2px solid #ffcf3a; }
+.cup.over { border-color: #ffcf3a; }
+.game { display: grid; place-items: center; width: 40px; height: 40px; }
+.game svg { width: 100%; height: 100%; fill: none; stroke: #8a6d1e; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.cup-tools { grid-column: 2 / -1; display: flex; gap: 14px; align-items: center; font-size: 13px; color: #a9b4d2; padding-left: 2px; }
+.cup-tools label { display: flex; gap: 5px; align-items: center; cursor: pointer; }
+.cup-tools input { accent-color: #ffcf3a; margin: 0; }
+.maker .cup-tools button { font: inherit; font-size: 13px; letter-spacing: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; color: #a9b4d2; text-decoration: underline dotted; text-underline-offset: 3px; }
+.maker .cup-tools button:hover { color: #f1f4fc; }
+/* The cup select's look: its stars on brown, and the picked cup in its gold ring */
+.look { display: grid; justify-items: center; gap: 2px; margin: 0 0 14px; padding: 10px 14px 8px; border-radius: 14px; border: 2px solid #1b2a5c; background: #312300 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='%23413003' stroke='%23413003' stroke-width='3' stroke-linejoin='round'%3E%3Cpolygon points='16 3 20 11 28 12 22 18 24 27 16 22 8 27 10 18 4 12 12 11'/%3E%3Cpolygon points='48 35 52 43 60 44 54 50 56 59 48 54 40 59 42 50 36 44 44 43'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 64px 64px; }
+.look-cups { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 18px; }
+.maker .look-cup { width: 104px; height: 104px; padding: 0; border-radius: 50%; display: grid; place-items: center; background: none; box-shadow: none; }
+.look-cup img, .look-cup .game { width: 64px; height: 64px; transition: width 0.15s, height 0.15s; }
+.maker .look-cup.on { background: radial-gradient(closest-side, #230000 0 76%, #5a3800 78%, #ffe68a 83%, #d0ab36 89%, #8a5a00 96%, transparent 100%); }
+.look-cup.on img, .look-cup.on .game { width: 74px; height: 74px; }
+.look-name { font-family: var(--display); font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase; color: #bfefff; text-shadow: var(--outline); min-height: 1.3em; }
+.look small { color: #a99a6a; font-size: 12px; }
+.cup.short { border-color: #6b5a1a; }
+.cup .warn { color: #ffcf3a; font-size: 13px; padding: 2px 4px 0; }
+.course { display: grid; grid-template-columns: 14px 60px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 5px 8px 5px 6px; border-radius: 10px; border: 1px solid #1b2a5c; background: #0d1538; min-height: 54px; cursor: pointer; }
+.course.on { border-color: #ffcf3a; box-shadow: 0 0 0 1px #ffcf3a; }
+.course.over { border-color: #6edcff; box-shadow: 0 0 0 1px #6edcff; }
+.course .grip { color: #3c5aa8; font-size: 14px; line-height: 0.5; letter-spacing: -1px; cursor: grab; }
+.course .name { display: block; font-weight: 600; font-size: 15px; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.course .by { display: block; color: #a9b4d2; font-family: var(--body); font-size: 13px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.course .facts { color: #a9b4d2; font-size: 12px; text-align: right; line-height: 1.3; white-space: nowrap; }
+.course .move { display: none; gap: 4px; }
+.course.bad { border-color: #7a2a2a; cursor: default; }
+.course.bad .by { color: #ff6b5e; white-space: normal; }
+.course.empty { grid-template-columns: 1fr; border-style: dashed; border-color: #26387a; background: none; color: #6b7aa6; font-size: 14px; text-align: center; cursor: default; }
+.pill { font-family: var(--display); font-size: 10px; letter-spacing: 0.04em; padding: 0 6px; border-radius: 999px; color: #3a2400; background: linear-gradient(180deg, #ffe680, #ffb02a); box-shadow: inset 0 -1px 0 #c97800; margin-right: 6px; vertical-align: 1px; }
+.pill.fan { color: #062c33; background: linear-gradient(180deg, #b6f7ff, #58cfe6); box-shadow: inset 0 -1px 0 #2a8ea3; }
+.th { display: block; width: 60px; aspect-ratio: 256 / 184; border-radius: 6px; overflow: hidden; border: 1px solid #ffffff2e; background: #061023; }
+.th img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.th.none { background: repeating-conic-gradient(#121c58 0 25%, #0f174a 0 50%) 0 0 / 12px 12px; }
+.th.big { width: 100%; border-radius: 10px; border: 2px solid #3c5aa8; }
+/* The stages as the stage select has them: six a page, down its columns */
+.stage-pages { display: grid; gap: 22px; }
+.stages { display: grid; grid-template-rows: repeat(2, auto); grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-flow: column; gap: 14px; }
+.stages .course { grid-template-columns: 60px minmax(0, 1fr); }
+.stages .course .grip, .stages .course .facts { display: none; }
+.stages .course.empty, .cup .course.empty { grid-template-columns: 1fr; }
+.side h3 { font-family: var(--display); font-weight: 400; font-size: 18px; margin: 0; display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.side h3 small { font-family: var(--body); font-size: 13px; color: #a9b4d2; text-align: right; }
+.side .pick { margin: 0; color: #a9b4d2; font-size: 14px; }
+.side:has(.edit) .pick { display: none; }
+.edit { display: grid; gap: 10px; padding: 12px; border-radius: 14px; border: 2px solid #ffcf3a; background: #0d1538; cursor: default; }
+.edit label, .edit .field { display: grid; gap: 2px; font-size: 13px; color: #a9b4d2; }
+.edit .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.edit .seg { width: 100%; }
+.maker .edit .seg button { flex: 1; font: inherit; font-size: 13px; letter-spacing: 0; padding: 4px; border-radius: 999px; background: none; color: #a9b4d2; box-shadow: none; }
+.maker .edit .seg button[aria-pressed=true] { background: #3c5aa8; color: #f1f4fc; }
+.edit .brings { font-size: 13px; color: #3fd27a; margin: 0; }
+.edit .brings.no { color: #a9b4d2; }
+.edit .foot { display: flex; justify-content: space-between; align-items: center; padding: 0; border: 0; font-size: 13px; color: #a9b4d2; }
+.shotwrap { position: relative; }
+.shotwrap .lab { position: absolute; left: 8px; right: 8px; bottom: 6px; display: flex; justify-content: space-between; font-family: var(--display); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #ffcf3a; text-shadow: var(--outline); }
+.shotwrap .lab span:last-child { text-align: right; }
+.shotwrap .lab b { display: block; color: #8cf5fa; font-weight: 400; font-size: 9px; }
+.tray-zone { display: grid; gap: 10px; border-radius: 10px; }
+.tray-zone.over { box-shadow: 0 0 0 2px #6edcff; }
+.tray { display: grid; gap: 6px; }
+.tray:empty { display: none; }
+.tray .course { grid-template-columns: 14px 60px minmax(0, 1fr) auto; }
+
+/* The check list and the two ways out */
+.maker .bottom { display: grid; grid-template-columns: minmax(0, 1fr) 470px; gap: 14px 28px; align-items: center; padding: 16px 22px 20px; border-top: 1px solid #1b2a5c; background: #0a103099; }
+.maker .bottom .lcd { align-self: start; }
+.lcd .lines { display: contents; }
+.maker .bottom .acts { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: flex-end; }
+.maker .bottom .acts small { flex-basis: 100%; color: #a9b4d2; font-size: 13px; text-align: right; }
+.maker .bottom .code { flex-basis: 100%; text-align: right; color: #a9b4d2; font-size: 14px; }
+.maker .bottom .code b { font-family: var(--mono); font-size: 17px; letter-spacing: 0.12em; color: #8cf5fa; margin-left: 4px; }
+.patcher button.second { background: #1b2a5c; color: #f1f4fc; box-shadow: 0 6px 0 #0a1030; }
+
+@media (max-width: 900px) {
+  .work, .maker-hero, .which { grid-template-columns: minmax(0, 1fr); }
+  .maker .head { grid-template-columns: minmax(0, 1fr); padding: 14px 16px; }
+  .start { padding: 16px 12px 20px; }
+  .start .slot { padding: 28px 14px; }
+  .start .slot b { font-size: 22px; }
+  .board { padding: 14px 12px 16px; }
+  .cups { grid-template-columns: minmax(0, 1fr); }
+  .stage-pages { gap: 14px; }
+  .stages { grid-template: none / minmax(0, 1fr); grid-auto-flow: row; gap: 6px; }
+  .side { border-left: 0; border-top: 1px solid #1b2a5c; padding: 14px 12px 18px; }
+  .side .picked, .side .pick, .pages small { display: none; }
+  .course, .tray .course { grid-template-columns: 52px minmax(0, 1fr) auto; }
+  .stages .course { grid-template-columns: 52px minmax(0, 1fr) auto; }
+  .course .grip, .course .facts { display: none; }
+  .course .move { display: flex; }
+  .th { width: 52px; }
+  .maker .bottom { grid-template-columns: minmax(0, 1fr); padding: 14px 12px 18px; }
+  .maker .bottom .acts { justify-content: stretch; }
+  .maker .bottom .acts button { flex: 1; padding: 12px 10px; font-size: 17px; }
+  .maker .bottom .acts small, .maker .bottom .code { text-align: left; }
+  .pages { flex-wrap: nowrap; overflow-x: auto; }
+  .maker .pages button { white-space: nowrap; }
+}
+</style>
+</head>
+<body>
+<div class="flag" aria-hidden="true"></div>
+<div class="page">
+  <nav class="crumbs"><a href="../">Ultra Editions</a> <span class="bar">|</span> <a href="./">Double Dash Ultra</a> · <a href="start.html">Get Ultra</a> · <span aria-current="page">Pack Maker</span></nav>
+  <header class="maker-hero">
+    <div>
+      <div class="eyebrow">Double Dash Ultra</div>
+      <h1>Pack Maker</h1>
+      <p class="intro">Make your own course pack! Build your cups, name them and your pack gets its own pages in the game. <strong>Race it in Grand Prix, Versus, Time Trials and LAN play!</strong></p>
+    </div>
+    <ol class="steps">
+      <li><b>Drop your course .zip files!</b></li>
+      <li><b>Build your cups</b>, name them and give them icons!</li>
+      <li><b>Save your pack</b>, or put it on your disc!</li>
+    </ol>
+  </header>
+  <div class="which">
+    <b>Which do I need?</b>
+    <span><b>Just trying a course?</b>Put its ZIP in <code>mkddu/courses</code> on your SD card and race it right away!</span>
+    <span><b>Want your own cups?</b>Make a pack here, for your SD card or your disc!</span>
+  </div>
+  <div class="patcher maker">
+    <div class="top"><span>Pack Maker</span></div>
+    <div class="head">
+      <label><span>Pack name<span data-m="name-count">0 of 19</span></span>
+        <input type="text" placeholder="My Pack" maxlength="19" data-m="name"></label>
+      <label><span>Version</span>
+        <input type="text" placeholder="1.0" maxlength="4" inputmode="decimal" data-m="version"></label>
+      <div class="stats" data-m="stats"></div>
+      <div class="acts"><button type="button" class="quiet" data-m="open">Open a pack</button><button type="button" class="quiet" data-m="new">New pack</button></div>
+    </div>
+    <div class="start" data-m="start">
+      <label class="slot">
+        <span><b>Drop your course ZIPs here</b><span>Or click to pick them. Any custom course ZIP for Double Dash works!</span></span>
+        <input type="file" accept=".zip" multiple>
+      </label>
+      <div class="or"><span>Got a pack already?</span><button type="button" class="quiet" data-m="open">Open a pack</button><span>and change its cups, names and courses.</span></div>
+      <div class="lcd"><div data-m="status"></div></div>
+      <div class="cups ghost" data-m="ghost" aria-hidden="true"></div>
+    </div>
+    <div class="work" data-m="work" hidden>
+      <div class="board">
+        <div class="pages" data-m="pages"></div>
+        <div class="look" data-m="look" hidden>
+          <div class="look-cups" data-m="look-cups"></div>
+          <div class="look-name" data-m="look-name"></div>
+          <small>Your cups in the game!</small>
+        </div>
+        <div class="cups" data-m="cups"></div>
+        <div class="battle" data-m="battle">
+          <div class="pages"><span>Battle stages</span><small>Six stages fill a page in the game.</small></div>
+          <div class="stage-pages" data-m="stages"></div>
+        </div>
+      </div>
+      <aside class="side">
+        <h3 class="picked" data-m="picked" hidden></h3>
+        <p class="pick">Click a course to change its name and details.</p>
+        <div data-m="edit"></div>
+        <div class="tray-zone" data-m="tray-zone">
+          <h3 data-m="tray-head">Not in a cup yet <small data-m="tray-count"></small></h3>
+          <div class="tray" data-m="tray"></div>
+          <label class="slot thin">
+            <span><b>Add courses</b><span>Drop course ZIPs here or click.</span></span>
+            <input type="file" accept=".zip" multiple>
+          </label>
+        </div>
+      </aside>
+    </div>
+    <div class="bottom" data-m="bottom" hidden>
+      <div class="lcd"><span class="lines" data-m="checks"></span><div data-m="status"></div></div>
+      <div class="acts">
+        <button type="button" data-m="save">Save the pack</button><button type="button" class="second" data-m="hand">Put it on my disc</button>
+        <span class="code" data-m="code" hidden></span>
+        <small>Put the file in <code>mkddu/courses</code> on your SD card, or send it to your friends.<br>For LAN play every console needs the same pack, with the same pack code!</small>
+      </div>
+    </div>
+    <div class="foot">Your pack is made in your browser. Your files stay on your computer.</div>
+    <input type="file" accept=".pak" data-m="pak" hidden>
+  </div>
+
+  <footer>
+    <p>A fun passion project by <span class="by">AsmGecko</span> for my friend group. :)</p>
+    <p>A free fan project, not affiliated with, endorsed or sponsored by Nintendo. Mario Kart: Double Dash!!, Super Mario Strikers and their characters are trademarks of Nintendo. No game files are shared here.</p>
+  </footer>
+</div>
+<script src="../patcher-core.js?v=5fd23a5c"></script>
+<script src="../course-music.js?v=5fd23a5c"></script>
+<script src="../course-pak.js?v=5fd23a5c"></script>
+<script src="../pack-maker.js?v=5fd23a5c"></script>
+</body>
+</html>

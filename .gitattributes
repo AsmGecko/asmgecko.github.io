@@ -1,0 +1,2 @@
+# Text is LF on every machine, also in a checkout on Windows
+* text=auto eol=lf

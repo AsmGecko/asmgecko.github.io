@@ -1,0 +1,93 @@
+/* What the pages of Double Dash Ultra share: their colors and fonts, the top of a page, the steps and the box of
+   the Ultra Patcher, which the Pack Maker is in too. The box keeps the dark of the game in the light theme. */
+:root {
+  --bg: #0b1430; --ink: #f1f4fc; --muted: #a9b4d2; --line: #26387a; --edge: #3c5aa8;
+  --gold: #ffcf3a; --cyan: #6edcff; --green: #3fd27a;
+  --check-a: #f1f4fc; --check-b: #0b1430;
+  --outline: -1px -1px 0 #0a1030, 1px -1px 0 #0a1030, -1px 1px 0 #0a1030, 1px 1px 0 #0a1030, 0 2px 0 #0a1030;
+  --display: "Arial Rounded MT Bold", "Trebuchet MS", "Segoe UI Black", sans-serif;
+  --body: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "Cascadia Mono", ui-monospace, Consolas, monospace;
+  --bad: #ff6b5e; --on-gold: #1a1300;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #eef2fa; --ink: #14203f; --muted: #56617d; --line: #cdd6ea; --edge: #9fb0d8;
+    --gold: #a86f00; --cyan: #1f6fbf; --check-a: #14203f; --check-b: #eef2fa;
+    --bad: #b0282e; --on-gold: #ffffff;
+    color-scheme: light;
+  }
+}
+:root[data-theme="dark"] { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.6 var(--body); }
+img { max-width: 100%; height: auto; }
+.flag { height: 16px; background: repeating-conic-gradient(var(--check-a) 0 25%, var(--check-b) 0 50%) 0 0 / 16px 16px; }
+.page { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+.crumbs { padding: 14px 0 0; font-size: 14px; color: var(--muted); }
+.crumbs a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
+.crumbs a:hover { color: var(--ink); }
+.crumbs [aria-current] { color: var(--ink); }
+.crumbs .bar { margin: 0 6px; opacity: 0.5; }
+h2 { font-family: var(--display); font-size: clamp(26px, 3.4vw, 36px); line-height: 1.1; margin: 0 0 6px; text-wrap: balance; }
+.intro { color: var(--muted); margin: 0 0 18px; max-width: 72ch; }
+.intro strong { color: var(--ink); font-weight: 600; }
+.eyebrow { font-family: var(--mono); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.steps { margin: 0 0 22px; padding: 0; list-style: none; counter-reset: step; display: grid; gap: 10px; max-width: 64ch; }
+.steps li { counter-increment: step; position: relative; padding-left: 44px; color: var(--muted); min-height: 32px; }
+.steps li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: var(--on-gold); font-family: var(--display); font-weight: 400; }
+.steps li b { color: var(--ink); font-weight: 400; font-family: var(--display); }
+.by { color: var(--gold); font-family: var(--display); }
+.patcher { margin-top: 18px; max-width: 680px; border-radius: 18px; border: 2px solid var(--edge); background: linear-gradient(180deg, #121d4d, #0d1538); box-shadow: 0 24px 60px #0008, inset 0 1px 0 #ffffff22; overflow: hidden; color: #f1f4fc; }
+.patcher [hidden], .patcher[hidden] { display: none !important; }
+.patcher .top { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: linear-gradient(180deg, #ffe680, #ffb02a); color: #3a2400; font-family: var(--display); font-weight: 400; font-style: normal; letter-spacing: 0.08em; text-transform: uppercase; }
+.patcher .body { padding: 22px; display: grid; gap: 16px; }
+.slot { position: relative; display: grid; grid-template-columns: 96px 1fr; gap: 18px; align-items: center; padding: 18px; border-radius: 14px; border: 2px dashed #3c5aa8; background: #0a1030; cursor: pointer; }
+.slot:hover, .slot.drag, .slot:has(input:focus-visible) { border-color: #ffcf3a; }
+.slot.file { grid-template-columns: 1fr; padding: 12px 18px; }
+.slot input { position: absolute; opacity: 0; width: 0; height: 0; }
+.slot b { display: block; font-family: var(--display); font-weight: 400; font-style: normal; font-size: 20px; }
+.slot span span { color: #a9b4d2; font-size: 15px; }
+.disc { width: 96px; height: 96px; border-radius: 50%; position: relative; background: repeating-conic-gradient(#1a2660 0 15deg, #121c4c 15deg 30deg); box-shadow: 0 6px 18px #0009; }
+.disc::after { content: ""; position: absolute; inset: 36px; border-radius: 50%; background: #0a1030; box-shadow: 0 0 0 6px #3c5aa8 inset; }
+.loaded .disc { background: conic-gradient(from 0deg, #cbd5ff, #6b7bd6, #e8ecff, #5566c9, #cbd5ff); }
+.loaded .disc::after { box-shadow: 0 0 0 6px #a9b4d2 inset; }
+.lcd { border-radius: 10px; background: #061023; border: 1px solid #1b2a5c; box-shadow: inset 0 2px 12px #000a; padding: 12px 16px; font-family: var(--mono); font-size: 14px; color: #3fd27a; display: grid; gap: 4px; min-height: 42px; }
+.lcd div:empty { display: none; }
+.lcd div::before { content: "● "; }
+.lcd .wait { color: #6edcff; }
+.lcd .wait::before { content: "○ "; }
+.lcd .bad { color: #ff6b5e; }
+.patcher progress { width: 100%; height: 14px; appearance: none; border-radius: 999px; background: #061023; border: 1px solid #1b2a5c; overflow: hidden; }
+.patcher progress::-webkit-progress-bar { background: transparent; }
+.patcher progress::-webkit-progress-value { background: repeating-linear-gradient(90deg, #ffcf3a 0 10px, #ffe680 10px 20px); }
+.patcher progress::-moz-progress-bar { background: repeating-linear-gradient(90deg, #ffcf3a 0 10px, #ffe680 10px 20px); }
+.patcher .row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
+.seg { display: inline-flex; border: 1px solid #3c5aa8; border-radius: 999px; padding: 3px; background: #0a1030; }
+.seg label { position: relative; padding: 6px 14px; border-radius: 999px; font-size: 15px; color: #a9b4d2; cursor: pointer; }
+.seg input { position: absolute; opacity: 0; width: 0; height: 0; }
+.seg label:has(input:checked) { background: #3c5aa8; color: #f1f4fc; }
+.seg label:has(input:focus-visible) { outline: 2px solid #ffcf3a; }
+.patcher button, .patcher .save { font: inherit; font-family: var(--display); font-weight: 400; font-style: normal; font-size: 20px; letter-spacing: 0.04em; padding: 14px 30px; border-radius: 999px; border: 0; background: #ffcf3a; color: #1a1300; cursor: pointer; text-decoration: none; box-shadow: 0 6px 0 #b07600, 0 12px 24px #0008; }
+.patcher button:disabled { opacity: 0.4; cursor: default; box-shadow: none; }
+.patcher .foot { padding: 10px 22px 16px; font-size: 14px; color: #a9b4d2; border-top: 1px solid #1b2a5c; }
+.patcher .foot a { color: #ffcf3a; }
+footer { margin-top: 44px; padding: 20px 0 48px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+footer p { margin: 0 0 6px; }
+footer b { color: var(--gold); }
+.patcher .quiet { font-family: var(--body); font-size: 15px; letter-spacing: 0; padding: 8px 16px; border-radius: 999px; background: #1b2a5c; color: #f1f4fc; box-shadow: none; border: 0; cursor: pointer; text-decoration: none; }
+.patcher .quiet.x { padding: 6px 12px; font-size: 18px; line-height: 1; }
+.patcher .quiet:focus-visible { outline: 2px solid #ffcf3a; }
+.slot.thin { grid-template-columns: 1fr; padding: 10px 16px; }
+.slot.thin b { font-size: 17px; }
+code { font-family: var(--mono); font-size: 0.9em; }
+
+@media (max-width: 760px) {
+  body { font-size: 16px; }
+  .slot { grid-template-columns: 64px 1fr; gap: 14px; padding: 14px; }
+  .slot.thin { grid-template-columns: 1fr; }
+  .disc { width: 64px; height: 64px; }
+  .disc::after { inset: 24px; }
+  .patcher .body { padding: 16px; }
+}

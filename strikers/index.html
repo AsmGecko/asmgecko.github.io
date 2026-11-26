@@ -125,6 +125,25 @@ section { padding: 56px 0 0; }
 .steps .where summary { cursor: pointer; color: var(--ink); }
 .steps .where code { font-family: var(--mono); font-size: 13px; overflow-wrap: anywhere; }
 .steps li b { color: var(--ink); font-weight: 700; font-family: inherit; }
+.get-tabs { display: flex; gap: 6px; margin: 14px 0 22px; border-bottom: 2px solid var(--line); }
+.get-tabs button { font: inherit; font-family: var(--heavy); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: 18px; color: var(--muted); background: none; border: 0; border-bottom: 4px solid transparent; margin-bottom: -2px; padding: 8px 18px; cursor: pointer; }
+.get-tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--gold); }
+.sd-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 36px; align-items: start; margin-top: 12px; }
+.card-tree { border: 2px solid var(--line); border-radius: 14px; padding: 18px 22px 20px; }
+.card-tree h3 { font-size: 20px; margin: 0 0 10px; }
+.tree { font-family: var(--mono); font-size: 15px; line-height: 1.9; margin: 0; }
+.tree i { font-style: normal; color: var(--gold); }
+.tree span { font-family: var(--body); color: var(--muted); font-size: 14px; margin-left: 14px; }
+.notes { margin: 0; padding-left: 20px; color: var(--muted); display: grid; gap: 6px; max-width: 64ch; }
+.notes strong { color: var(--ink); }
+.steps code { font-family: var(--mono); font-size: 15px; color: var(--ink); }
+.btn { display: inline-block; font: inherit; font-family: var(--heavy); font-weight: 900; font-style: italic; font-size: 18px; letter-spacing: 0.04em; padding: 10px 22px; border-radius: 999px; border: 0; background: #ffcf3a; color: #1a1300; text-decoration: none; cursor: pointer; box-shadow: 0 5px 0 #b07600; }
+.btn:disabled { opacity: 0.5; cursor: default; }
+.get { display: grid; gap: 10px; justify-items: start; max-width: 64ch; margin: 10px 0 4px; }
+.get progress { width: 100%; }
+.get p { margin: 0; }
+.get [hidden], .get-tabs[hidden] { display: none; }
+.get .bad { color: var(--bad); }
 .check { max-width: min(64ch, calc(100vw - 32px)); border: 2px solid var(--edge); border-radius: 14px; padding: 0; color: var(--muted); font-size: 15px; background: var(--bg); color-scheme: inherit; }
 .check > div { padding: 18px 22px; }
 .check::backdrop { background: #0a1030cc; }
@@ -216,7 +235,8 @@ footer b { color: var(--gold); }
   .strip figure { scroll-snap-align: start; }
   .strip figure.wide { grid-column: auto; display: block; }
   .strip .wide figcaption { margin-top: 8px; font-size: 15px; }
-  .changes { grid-template-columns: minmax(0, 1fr); }
+  .changes, .sd-cols { grid-template-columns: minmax(0, 1fr); }
+  .get-tabs button { font-size: 16px; padding: 8px 12px; }
 }
 </style>
 </head>
@@ -241,7 +261,7 @@ footer b { color: var(--gold); }
         <li><b>Faster loading</b>45% faster match loading and 44% faster boot!</li>
         <li><b>And way more</b>Mirror matches, four new cameras, 60-minute matches, random teams, tuning.</li>
       </ul>
-      <a class="cta" href="#install"><b data-soon>Coming soon</b><b data-ready hidden>Ultra Patcher</b><span data-soon>a free patch for your own disc</span><span data-ready hidden>Patch your disc now!</span></a>
+      <a class="cta" href="#install"><b data-soon>Coming soon</b><b data-ready hidden>Get Ultra</b><span data-soon>a free patch for your own disc</span><span data-ready hidden>On your GameCube, Wii or in Dolphin!</span></a>
     </div>
     <img class="shot" src="img/ultra-menu.jpg" width="640" height="477" alt="The Ultra menu in the game, on its Rules page with Game mode, Strike block, Captain powers, Penalties, Red cards and Rotating teams">
   </header>
@@ -292,9 +312,41 @@ footer b { color: var(--gold); }
   </section>
 
   <section class="install" id="install">
-    <h2>Ultra Patcher</h2>
-    <p class="intro" data-soon><strong>Coming soon.</strong> A free patch for your own disc, applied in your browser.</p>
+    <h2>Get Ultra</h2>
     <p class="intro">Version <b data-fact="version">0.2 BETA</b>. Tested on real GameCube hardware and in Dolphin. A crash shows a screen you can send us a photo of.</p>
+    <p class="intro" data-card hidden>On a GameCube with Swiss or a Wii with the Homebrew Channel, get the <strong>SD card version</strong>. For Dolphin, Nintendont or a disc, patch your own disc with the <strong>Ultra Patcher</strong>.</p>
+    <div class="get-tabs" role="tablist" data-card hidden>
+      <button type="button" role="tab" id="tab-sd" aria-controls="sd" aria-selected="true" data-card hidden>SD card version</button>
+      <button type="button" role="tab" id="tab-patcher" aria-controls="patcher" aria-selected="false">Ultra Patcher</button>
+    </div>
+    <div id="sd" role="tabpanel" aria-labelledby="tab-sd" data-card hidden>
+      <div class="sd-cols">
+        <div>
+          <ol class="steps">
+            <li><b>Download Ultra</b> and unzip it onto your SD card.
+              <div class="get" data-download="strikers" data-file="sd" data-label="Download Ultra"></div></li>
+            <li><b>Put your own copy</b> of Super Mario Strikers (USA) anywhere on the card, or use the disc.</li>
+            <li><b>Start it:</b> <code>boot.dol</code> from Swiss on a GameCube, Ultra from the Homebrew Channel on a Wii.</li>
+          </ol>
+          <ul class="notes">
+            <li>To update, unzip the new Ultra over the old one.</li>
+            <li>Your saves go on the memory card.</li>
+            <li>Hold <strong>B</strong> while Ultra starts for its menu. No disc yet? Put it in and you're playing!</li>
+          </ul>
+        </div>
+        <div class="card-tree">
+          <h3>On the card</h3>
+          <pre class="tree"><i>apps/strikersu/</i>
+  boot.dol<span>Ultra</span>
+  meta.xml<span>for the Homebrew Channel</span>
+  icon.png<span>its icon there</span>
+<i>anywhere</i>
+  Strikers (USA)<span>your own copy, or the disc</span></pre>
+        </div>
+      </div>
+    </div>
+    <div id="patcher" role="tabpanel" aria-labelledby="tab-patcher">
+    <p class="intro" data-soon><strong>Coming soon.</strong> A free patch for your own disc, applied in your browser.</p>
     <ol class="steps">
       <li><b>Pick your copy</b> of Super Mario Strikers (USA).</li>
       <li><b>Make Ultra</b> and play it in Dolphin or on your GameCube.</li>
@@ -302,11 +354,18 @@ footer b { color: var(--gold); }
         <details class="where"><summary>Where's that?</summary>Windows: <code>Documents\Dolphin Emulator\GameSettings</code>, or <code>User\GameSettings</code> next to Dolphin.exe in a portable install.<br>macOS: <code>~/Library/Application Support/Dolphin/GameSettings</code>.<br>Linux: <code>~/.local/share/dolphin-emu/GameSettings</code>.<br>Flatpak: <code>~/.var/app/org.DolphinEmu.dolphin-emu/data/dolphin-emu/GameSettings</code>.</details></li>
     </ol>
     <div class="patcher" data-game="strikers" hidden></div>
+    </div>
   </section>
 
   <section>
     <h2>Changelog</h2>
     <dl class="changes">
+      <div><dt>0.3 beta</dt><dd><ul>
+        <li>New SD card version for Swiss on GameCube and the Homebrew Channel on Wii!</li>
+        <li>Plays from your own disc, or from a copy of it on an SD card, a GC Loader or a Wii's USB drive.</li>
+        <li>No disc yet? Ultra waits for it, and starts as soon as you put it in.</li>
+        <li>Ultra has its own icon in the Homebrew Channel, and the game's reset goes back to it.</li>
+      </ul></dd></div>
       <div><dt>0.2 beta</dt><dd><ul>
         <li>Fixed Crater Field hanging while it loads in Dolphin.</li>
       </ul></dd></div>
@@ -320,7 +379,7 @@ footer b { color: var(--gold); }
     <ul>
       <li><b>Decompilation</b> by yannicksuter and the smstrikers-decomp team. Every change was written against it.</li>
       <li><b>Debug codes</b> by Ralf on gc-forever, which showed us the game's debug switches for the Debug page.</li>
-      <li><b>Thanks</b> to Next Level Games, whose beta content is switched back on here, to RenolY2 for gc-c-kit and to cristian64 for MKDD Extender.</li>
+      <li><b>Thanks</b> to Double Dash Deluxe for the ideas behind the SD card version, to Next Level Games, whose beta content is switched back on here, to RenolY2 for gc-c-kit and to cristian64 for MKDD Extender.</li>
     </ul>
   </section>
   <footer>
@@ -333,6 +392,7 @@ footer b { color: var(--gold); }
 <script src="../patcher-core.js?v=12ccbd39"></script>
 <script src="../course-pak.js?v=12ccbd39"></script>
 <script src="../patcher.js?v=12ccbd39"></script>
+<script src="../download.js?v=12ccbd39"></script>
 <script src="../lightbox.js?v=12ccbd39"></script>
 </body>
 </html>

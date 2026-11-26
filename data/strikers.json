@@ -1,8 +1,8 @@
 {
  "game": "strikers",
  "title": "Super Mario Strikers Ultra",
- "version": "0.2 BETA",
- "date": "2026-11-11",
+ "version": "0.3a BETA",
+ "date": "2026-11-26",
  "retail": {
   "id": "G4QE01",
   "size": 1459978240,
@@ -12,14 +12,25 @@
  },
  "release": {
   "id": "G4QEJ8",
-  "size": 532119552,
-  "sha1": "515f5fdcace51664b5fd941e3cdc102798c7f7da",
-  "name": "Super Mario Strikers Ultra v0.2 BETA [G4QEJ8].trim.iso"
+  "size": 533168128,
+  "sha1": "5bad7b70fcc4b9498274f1dab181f6bda4460020",
+  "name": "Super Mario Strikers Ultra v0.3a BETA [G4QEJ8].trim.iso"
  },
  "patch": {
-  "name": "Super Mario Strikers Ultra v0.2 BETA [G4QEJ8].patch",
-  "size": 28611430,
-  "sha256": "a12367d4965e2ce884c0b5c02a7cb62ad9d3fbab47ffa30d9e1e9e72b8e93fcc",
-  "url": "https://huggingface.co/qwenismyking/test/resolve/main/smsu0.2-beta.patch"
+  "name": "Super Mario Strikers Ultra v0.3a BETA [G4QEJ8].patch",
+  "size": 27192002,
+  "sha256": "7c311f5e85056030c58b527cc3b67c136afddc28bfd69c6e834f7ef2a6be96e6",
+  "url": "https://huggingface.co/qwenismyking/test/resolve/main/smsu0.3a-beta.patch"
+ },
+ "sd": {
+  "name": "Super Mario Strikers Ultra SD Card v0.3a BETA.zip",
+  "size": 645026,
+  "sha256": "1b2cae89a5a148e78717f8b93b831a1dcd34fe9ec2bf2f9229b0133888091e98",
+  "url": "https://huggingface.co/qwenismyking/test/resolve/main/smsu-sd-0.3a-beta.zip",
+  "seal": {
+   "salt": "23f8a7855b7fb93846e38a93a1c3fa6c",
+   "probes": [],
+   "head": "205dc5679d2da90e82f3b804be944529f9a5ce5ed1910942459f3f26255c89d7"
+  }
  }
 }

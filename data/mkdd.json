@@ -1,8 +1,8 @@
 {
  "game": "mkdd",
  "title": "Mario Kart: Double Dash!! Ultra",
- "version": "0.6 BETA",
- "date": "2026-11-25",
+ "version": "0.6a BETA",
+ "date": "2026-11-26",
  "retail": {
   "id": "GM4E01",
   "size": 1459978240,
@@ -13,87 +13,87 @@
  "release": {
   "id": "GM4EJ8",
   "size": 412286976,
-  "sha1": "49ab7f3e2dbaab61e70f60207b807e315d629f99",
-  "name": "Mario Kart Double Dash Ultra v0.6 BETA [GM4EJ8].trim.iso"
+  "sha1": "466ceb39f23e7a2d508408a138cd793f2a8fbaa9",
+  "name": "Mario Kart Double Dash Ultra v0.6a BETA [GM4EJ8].trim.iso"
  },
  "patch": {
-  "name": "Mario Kart Double Dash Ultra v0.6 BETA [GM4EJ8].patch",
-  "size": 2510128,
-  "sha256": "a0035b6f74249cc67a30848c3ad80ae77d6a6513fc02a99e8784ff15afe5ee46",
-  "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu0.6-beta.patch"
+  "name": "Mario Kart Double Dash Ultra v0.6a BETA [GM4EJ8].patch",
+  "size": 2510371,
+  "sha256": "c6f5208938df8560044abfe2431a6329604fe0a7019a3b61d9a25c4ad0ca90bc",
+  "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu0.6a-beta.patch"
  },
  "pack": {
-  "name": "Mario Kart Double Dash Ultra Retro Pack v0.6 BETA.pak",
+  "name": "Mario Kart Double Dash Ultra Retro Pack v0.6a BETA.pak",
   "size": 431162944,
   "sha256": "9419a1225b596c82518361cfec2a18a35236a04f2a313b4eca730e58e35a0488",
-  "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu-r-0.6-beta.pak",
+  "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu-r-0.6a-beta.pak",
   "courses": 80,
   "stages": 30,
   "seal": {
-   "salt": "073aafb684734717c87e045d145cf7ed",
+   "salt": "7ee2611fdd629745b09c9daaee39a27d",
    "probes": [
     [
-     1041976579,
+     3451436,
      4096
     ],
     [
-     1043950642,
+     991450774,
      4096
     ],
     [
-     1058110349,
+     994841783,
      4096
     ],
     [
-     1085787427,
+     1010608523,
      4096
     ],
     [
-     1109753933,
+     1017355846,
      4096
     ],
     [
-     1154601305,
+     1034205163,
      4096
     ],
     [
-     1161116229,
+     1072495048,
      4096
     ],
     [
-     1161304160,
+     1091840562,
      4096
     ],
     [
-     1217770378,
+     1098952537,
      4096
     ],
     [
-     1227310095,
+     1163301288,
      4096
     ],
     [
-     1289739749,
+     1186282256,
      4096
     ],
     [
-     1290571752,
+     1200114664,
      4096
     ],
     [
-     1299696058,
+     1236706436,
      4096
     ],
     [
-     1314276729,
+     1243659113,
      4096
     ],
     [
-     1331819756,
+     1255212433,
      4096
     ],
     [
-     1353899489,
+     1260856855,
      4096
     ]
    ],
@@ -101,23 +101,23 @@
   }
  },
  "sd": {
-  "name": "Mario Kart Double Dash Ultra SD Card v0.6 BETA.zip",
-  "size": 5661013,
-  "sha256": "bd024b2ca34d1ed1d5632ee87d213c89def9d990555285bd108ec9d21fd6dfe5",
-  "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu-sd-0.6-beta.zip",
+  "name": "Mario Kart Double Dash Ultra SD Card v0.6a BETA.zip",
+  "size": 5662870,
+  "sha256": "54489d77138795f0093a211c016fd202a8cad197bab06e3397527daebbf88933",
+  "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu-sd-0.6a-beta.zip",
   "seal": {
-   "salt": "83b0da1d149f0797bd7f5fb77029684c",
+   "salt": "f294280cdb31e8eeb1643ecba2150592",
    "probes": [],
-   "head": "7d59a357262bf2ad3322fc5a87744309073cf56f8dc2d73d899f41bee9a547c9"
+   "head": "b61bcb22b86c66651fea6a86a356d4224f32395f8215964ef3adda2d7b509d3b"
   }
  },
  "sdpack": {
-  "name": "Mario Kart Double Dash Ultra Retro Pack v0.6 BETA.zip",
+  "name": "Mario Kart Double Dash Ultra Retro Pack v0.6a BETA.zip",
   "size": 431163098,
   "sha256": "18a8596de0ba5d691a52b57b04d9cb3e0edcc6288fabe8bc5f71a484f979513e",
-  "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu-sdr-0.6-beta.zip",
+  "url": "https://huggingface.co/qwenismyking/test/resolve/main/mkddu-sdr-0.6a-beta.zip",
   "seal": {
-   "salt": "4175fbfedc54d877611c65bbb4b2db2a",
+   "salt": "0dab0f09b619a17952a439ce5799a12c",
    "probes": [],
    "head": "ae80399f1d80e0b49ae3e8cb86f9cb2053e6a5b06c21023cf99ab31276bc640b"
   }
